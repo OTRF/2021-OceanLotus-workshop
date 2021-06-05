@@ -82,13 +82,19 @@ resource "aws_subnet" "corp_subnet" {
 ############################################ Create NAT gateway ############################################
 resource "aws_eip" "nat_gw_eip" {
     vpc = true
+    tags = {
+        Name = "${var.VPC_NAME}_NAT_gateway_eip"
+    }
 }
 
 resource "aws_nat_gateway" "nat_gw" {
     allocation_id = aws_eip.nat_gw_eip.id
     subnet_id     = aws_subnet.public_subnet.id
-}
+    tags = {
+        Name = "${var.VPC_NAME}_NAT_gateway"
+    }
 
+}
 
 # Create the Route Table
 resource "aws_route_table" "private_route_table" {

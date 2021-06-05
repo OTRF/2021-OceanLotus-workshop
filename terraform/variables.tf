@@ -1,7 +1,7 @@
 # variables.tf
 
 variable "VPC_NAME" {
-  default = "OTRF_DEFCON_2021"
+  default = "OTR_DEFCON_2021"
 }
 
 variable "vpcCIDRblock" {
@@ -26,12 +26,13 @@ variable "dnsHostNames" {
 
 variable "ubunut-ami" {
   # Ubuntu 20.04
-  default = "ami-064446ad1d755489e"
+  # https://cloud-images.ubuntu.com/locator/ec2/
+  default = "ami-00399ec92321828f5"
 }
 
 variable "windows-ami" {
   # Windows Sever 2019
-  #default = "ami-0a16ffe32a92704ea"
+  default = "ami-086850e3dda52e84a"
 }
 
 
@@ -65,12 +66,10 @@ variable "mapPublicIP" {
 variable "siem_servers_map" {
   type = map
   default = {
-    "splunk_alpha" = "172.16.43.100",
-    "splunk_beta" = "172.16.43.101",
-    "elastic_alpha" = "172.16.43.110",
-    "elastic_beta" = "172.16.43.111",
-    "graylog_alpha" = "172.16.43.120",
-    "graylog_beta" = "172.16.43.121",
+    "splunk" = "172.16.43.100",
+    "elastic" = "172.16.43.110",
+    "graylog" = "172.16.43.120",
+    "nsm_box" = "172.16.43.20"
     "logstash_ingestor" = "172.16.43.10"
   }
 }
@@ -79,17 +78,20 @@ variable "management_subnet_map" {
   type = map
   default = {
     "jumpbox" = "172.16.21.100",
+    "grafana" = "172.16.21.101",
     "red_team_box_alpha" = "172.16.21.200",
-    "red_team_box_beta" = "172.16.21.2001"
+    "red_team_box_beta" = "172.16.21.201"
   }
 }
 
 variable "corp_servers_map" {
   type = map
   default = {
-    "WinDC" = "172.16.50.100",
-    "alpha" = "172.16.50.101",
-    "beta" = "172.16.50.102",
-    "charlie" = "172.16.50.103"
+    "macos_alpha" = "172.16.50.130"
+    "macos_beta" = "172.16.50.131"
+    "macos_charlie" = "172.16.50.132"
+    "windows_server" = "172.16.50.10"
+    "file_sever" = "172.16.50.20"
+    "wiki_server" = "172.16.50.30"
   }
 }
