@@ -1,0 +1,4 @@
+terraform/ssh_keys/*
+terraform/.terraform
+terraform/.terraform.lock.hcl
+terraform/terraform.*
