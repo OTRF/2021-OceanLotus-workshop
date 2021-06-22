@@ -1,7 +1,8 @@
 # macos-workshops
 
 # Table of Contents  
-* [Network diageam](#network-diagram)  
+* [Network diagram](#network-diagram)  
+* [AWS request limit increases](##AWS-requests)
 * [AWS pricing](#aws-pricing)
 * [AWS inital setup](#AWS-inital-setup)
   * [Create an AWS account](##Create-an-AWS)
@@ -16,6 +17,13 @@
 <p align="center">
   <img width="460" height="300" src=".img/aws_network_diagram.png">
 </p>
+
+# AWS request limit increases
+## Dedicated hosts
+To run macOS on AWS you need to create AWS EC2 dedicated hosts of instance type `mac1.metal`. By default, you can only create `0` instances of this type. You will need to submit a request to AWS to get this increased from `0` to `3`.
+
+## Virtual CPUs
+By default AWS limits your account to 32 vCPUs but this environment requires 72 (see table below). You will need to submit a request to AWS to get this increased from `32` to `72`.
 
 # AWS pricing
 Below is a table of all the AWS compute resources needed for this workshop. Depending your target audience size you can adjsut the size allocations for each machine. The SIEM machines use `r5` machines to provide as much memory as possible to keep search times down.
@@ -35,7 +43,7 @@ Despite all the things listed above, it roughly costs roughly $200 to run a 6 ho
   * 1 month of storage as $0.10/GB-month
   * Adding $20 for networking and etc
 
-Lastly, on normal user accounts AWS imposes a 32 vCPUs limit. You will need to request a vCPU limit increase and you can use the table below as jsutification for that increase.
+Lastly, on normal user accounts AWS imposes a 32 vCPUs limit. You will need to request a vCPU limit increase and you can use the table below as justification for that increase.
 
 | # | EC2 type | vCPU | Memory | SSD | Rate per hour | Description
 | --- | --- | --- | --- | --- | --- | --- |
@@ -57,7 +65,7 @@ Lastly, on normal user accounts AWS imposes a 32 vCPUs limit. You will need to r
 
 # AWS inital setup
 ## Create an AWS account
-Follow the steps on this [page to create an AWS account](https://aws.amazon.com/premiumsupport/knowledge-center/cre.  ate-and-activate-aws-account/)
+Follow the steps on this [page to create an AWS account](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/)
 
 ## Select a region
 Once you login into AWS it should automatically select the nearest datacenter based on your IP address. This repo has been created and tested on the `US East - Ohio` datacenter. This repo should be compatible with any region but pick the best region based on your location/users.
@@ -146,9 +154,11 @@ The Terraform playbook will execute the following script `files/setup_openvpn.sh
   1. `echo 'push "route 172.16.21.0 255.255.255.0"' >> /etc/openvpn/server.conf`
 1. `systemctl restart openvpn@server.service`
 1. `exit`
-1. `scp ubuntu@3.23.158.45:/home/ubuntu/client.ovpn ~/Desktop/client.ovpn`
+1. `scp ubuntu@<jumpbox public IPv4>:/home/ubuntu/client.ovpn ~/Desktop/client.ovpn`
   1. Download OpenVPN client config
 1. Import the OpenVPN client config into your VPN client
+
+##
 
 
 ## References
@@ -166,6 +176,19 @@ The Terraform playbook will execute the following script `files/setup_openvpn.sh
 * []()
 * []()
 
+### Arkmie
+* [Redirect HTTP to HTTPS in Nginx](https://serversforhackers.com/c/redirect-http-to-https-nginx)
+* [Arkmie - How do I proxy Arkime using Apache](https://arkime.com/faq)
+* [How To Create a Self-Signed SSL Certificate for Nginx in Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-in-ubuntu-16-04)
+* [Arkmie install instructions](https://raw.githubusercontent.com/arkime/arkime/main/release/README.txt)
+* [How To Install Java with Apt on Ubuntu 20.04](https://www.digitalocean.com/community/tutorials/how-to-install-java-with-apt-on-ubuntu-20-04)
+* []()
+* []()
+* []()
+* []()
+* []()
+* []()
+* []()
 
 ### Terraform
 * [Install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
@@ -173,9 +196,9 @@ The Terraform playbook will execute the following script `files/setup_openvpn.sh
 * [Resource: aws_nat_gateway](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/nat_gateway)
 * [How to use Terraform variables](https://upcloud.com/community/tutorials/terraform-variables/)
 * [Github - angristan/openvpn-install](https://github.com/angristan/openvpn-install)
-* []()
-* []()
-* []()
+* [aws_eip_association](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eip_association)
+* [aws_ec2_traffic_mirror_filter_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ec2_traffic_mirror_filter_rule)
+* [aws_network_interface](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/network_interface)
 * []()
 * []()
 * []()

@@ -2,3 +2,6 @@ terraform/ssh_keys/*
 terraform/.terraform
 terraform/.terraform.lock.hcl
 terraform/terraform.*
+conf/tls/*
+!conf/tls/openssl.cnf
+.DS_Store

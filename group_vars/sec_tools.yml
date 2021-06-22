@@ -1,0 +1,14 @@
+###################################################### Arkmie ######################################################
+arkmie_version: '2.7.1'
+arkmie_dl_url: 'https://s3.amazonaws.com/files.molo.ch/builds/ubuntu-20.04/moloch_{{ arkmie_version }}-1_amd64.deb'
+
+monitoring_interface: 'ens6'
+
+arkmie_admin_user: 'admin'
+arkmie_admin_password: 'Changeme123!'
+
+###################################################### Osquery ######################################################
+
+
+###################################################### Filebeat ######################################################
+
