@@ -1,0 +1,12 @@
+####################################################################
+# Setup monitoring interface
+####################################################################
+- name: Backup netplan config
+
+- name: Get monitoring interface MAC address
+  set_fact:
+    monitoring_interface_mac_address: "{{ ansible_interfaces['ens6'].mac_address }}"
+
+- name: Copy monitoring interface config
+
+- name: Restart netplan

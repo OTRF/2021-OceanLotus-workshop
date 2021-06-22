@@ -1,0 +1,52 @@
+####################################################################
+# Install/Setup Arkmie
+####################################################################
+- name: Install software
+  apt:
+    name: ['wget', 'net-tools', 'tcpdump']
+    state: latest
+
+- name: Install Java
+  apt:
+    name: 'default-jdk'
+
+- name: Download Arkmie 
+  url_get:
+    url: '{{ arkmie_dl_url }}'
+    dest: '/tmp/moloch_{{ arkmie_version }}-1_amd64.deb'
+
+- name: Install Arkmie
+  apt:
+    deb: '/tmp/moloch_{{ arkmie_version }}-1_amd64.deb'
+
+- name: Setup Arkmie
+
+####################################################################
+# Install/Setup Elasticsearch
+####################################################################
+- name: Start Elasticsearch
+  service:
+    name: 'elasticsearch'
+    enabled: yes
+    state: started
+    
+- name: Setup Arkmie on ES
+
+- name: Create Arkmie user
+
+####################################################################
+# Start Moloch
+####################################################################
+- name: Start molochcapture
+  service:
+    name: 'molochcapture'
+    enabled: yes
+    state: started
+    
+- name: Start molochviewer
+  service:
+    name: 'molochviewer'
+    enabled: yes
+    state: started
+
+- name: Healthcheck Arkmie

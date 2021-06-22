@@ -1,0 +1,10 @@
+- hosts: 'arkmie'
+  become: yes
+  become_user: root
+  tasks:
+    - include_vars: 'group_vars/sec_tools.yml'
+    - import_tasks: 'roles/init.yml'
+    - import_tasks: 'roles/arkmie/setup_netplan.yml'
+    - import_tasks: 'roles/arkmie/setup_arkmie.yml'
+    - import_tasks: 'roles/arkmie/setup_nginx.yml'
+    - import_tasks: 'roles/arkmie/setup_ufw.yml'
