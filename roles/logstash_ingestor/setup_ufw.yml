@@ -1,0 +1,17 @@
+####################################################################
+# Install/Setup UFW
+####################################################################
+- name: Allow OpenSSH
+  ufw:
+    rule: allow
+    name: OpenSSH
+
+- name: Allow Logstash
+  ufw:
+    rule: allow
+    port: '5044'
+    proto: tcp
+  
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled

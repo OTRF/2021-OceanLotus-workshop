@@ -1,18 +1,4 @@
 ####################################################################
-# Setup hostname
-####################################################################
-- name: Set hostname
-  hostname:
-    name: '{{ hostname }}.{{ base_domain }}'
-
-- name: Set hostname in /etc/hosts
-  lineinfile:
-    dest: /etc/hosts
-    regexp: '^127\.0\.0\.1[ \t]+localhost'
-    line: '127.0.0.1 localhost {{ hostname }}'
-    state: present
-
-####################################################################
 # Setup Timedatectl
 ####################################################################
 - name: Set time to {{ timezone }}

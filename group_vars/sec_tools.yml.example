@@ -5,16 +5,16 @@ arkmie_version: '2.7.1'
 arkmie_dl_url: 'https://s3.amazonaws.com/files.molo.ch/builds/ubuntu-20.04/moloch_{{ arkmie_version }}-1_amd64.deb'
 
 arkmie_admin_user: 'admin'
-arkmie_admin_password: 'PartyLike1969!'
+arkmie_admin_password: 'Changeme123!'
 
 arkmie_regular_user: 'threathunter'
-arkmie_regular_password: 'SatisfyCertaintySheepHollow9'
+arkmie_regular_password: 'Changeme123!'
 
 elasticsearch_oss_version: '7.10.2'
 elasticsearch_oss_gpg_url: 'https://artifacts.elastic.co/GPG-KEY-elasticsearch'
 elasticsearch_oss_repo_url: 'deb https://artifacts.elastic.co/packages/oss-7.x/apt stable main' 
 
 ###################################################### Osquery ######################################################
-
+osquery_version: '4.9.0'
 
 ###################################################### Filebeat ######################################################

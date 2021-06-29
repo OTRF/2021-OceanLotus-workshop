@@ -6,33 +6,78 @@
     name: ['wget', 'net-tools', 'tcpdump']
     state: latest
 
-- name: Install Java
-  apt:
-    name: 'default-jdk'
+- name: Stat Moloch config file 
+  stat:
+    path: '/data/moloch/etc/config.ini'
+  register: moloch_config
 
 - name: Download Arkmie 
-  url_get:
+  get_url:
     url: '{{ arkmie_dl_url }}'
     dest: '/tmp/moloch_{{ arkmie_version }}-1_amd64.deb'
+  when: not moloch_config.stat.exists
 
 - name: Install Arkmie
   apt:
     deb: '/tmp/moloch_{{ arkmie_version }}-1_amd64.deb'
+  when: not moloch_config.stat.exists
 
 - name: Setup Arkmie
+  ansible.builtin.expect:
+    command: /data/moloch/bin/Configure
+    responses:
+        "(.*)Semicolon ';' seperated list of interfaces to monitor(.*)": "{{ monitoring_interface }}"     # Select which interface to monitor
+        "(.*)Install Elasticsearch(.*)": "no"                                                             # Enter 'no' to install Elasticsearch
+        "(.*)Elasticsearch server URL(.*)": "http://localhost:9200"                                       # Elasticsearch URL
+        "(.*)Password to encrypt S2S and other things(.*)": '{{ arkmie_admin_password }}'                 # Password to encrypt S2S and other things
+        "(.*)Download GEO files(.*)": "yes"                                                               # Download GEO files                      
+  when: not moloch_config.stat.exists
+
+- name: Set Arkmie to listen on localhost
+  lineinfile:
+    path: '/data/moloch/etc/config.ini'
+    regexp: '^#viewHost ='
+    line: 'viewHost = localhost'
 
 ####################################################################
-# Install/Setup Elasticsearch
+# Setup Arkmie and Elasticsearch
 ####################################################################
-- name: Start Elasticsearch
-  service:
-    name: 'elasticsearch'
-    enabled: yes
-    state: started
-    
-- name: Setup Arkmie on ES
+- name: Stat Arkmie ES init
+  uri:
+    url: 'http://localhost:9200/_cat/indices/hunts*?v=true&s=index&format=json'
+    method: GET
+    return_content: yes
+    status_code: 200
+    body_format: json
+  register: arkmie_es_init
+  
+- name: Init Elasticsearch for Arkmie
+  shell: '/data/moloch/db/db.pl http://localhost:9200 init'
+  when: arkmie_es_init is not defined
 
-- name: Create Arkmie user
+- name: Stat Arkmie admin user
+  uri:
+    url: "http://localhost:9200/users_v7/_count?q=userId:{{ arkmie_admin_user }}&format=json"
+    method: GET
+    return_content: yes
+    status_code: 200
+  register: arkmie_admin_user_exists
+
+- name: Add Arkmie admin user
+  shell: '/data/moloch/bin/moloch_add_user.sh {{ arkmie_admin_user }} "Admin User" {{ arkmie_admin_password }} --admin'
+  when: arkmie_admin_user_exists.json.count == 0
+
+- name: Stat Arkmie threathunter user
+  uri:
+    url: "http://localhost:9200/users_v7/_count?q=userId:{{ arkmie_regular_user }}&format=json"
+    method: GET
+    return_content: yes
+    status_code: 200
+  register: arkmie_threathunter_user_exists
+
+- name: Add Arkmie threathunter user
+  shell: '/data/moloch/bin/moloch_add_user.sh {{ arkmie_regular_user }} "Regular User" {{ arkmie_regular_password }}'
+  when: arkmie_threathunter_user_exists.json.count == 0
 
 ####################################################################
 # Start Moloch
@@ -41,12 +86,22 @@
   service:
     name: 'molochcapture'
     enabled: yes
-    state: started
+    state: restarted
     
 - name: Start molochviewer
   service:
     name: 'molochviewer'
     enabled: yes
-    state: started
+    state: restarted
 
-- name: Healthcheck Arkmie
+- name: NGINX Let's Encrypt healthcheck
+  uri:
+    url: "http://127.0.0.1:8005/"
+    follow_redirects: none
+    method: GET
+    validate_certs: 'no'
+    status_code: 401
+  register: _result
+  until: "'Unauthorized' in _result.msg"
+  retries: 720 # 720 * 5 seconds = 1hour (60*60/5)
+  delay: 5 # Every 5 seconds

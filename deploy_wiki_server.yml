@@ -1,0 +1,10 @@
+- hosts: 'wiki_server'
+  become: yes
+  become_user: root
+  tasks:
+    - include_vars: 'group_vars/sec_tools.yml'
+    - include_vars: 'group_vars/corp.yml'
+    - import_tasks: 'roles/init.yml'                          # Init Linux host
+    - import_tasks: 'roles/docker/install_docker.yml'         # Install Docker
+    - import_tasks: 'roles/wiki_server/setup_wiki.yml'        # Install/Setup Dokuwiki
+    - import_tasks: 'roles/wiki_server/setup_ufw.yml'         # Setup UFW

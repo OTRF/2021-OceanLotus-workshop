@@ -1,0 +1,32 @@
+######################################################################################################################################################
+# Add firewall rules for file sharing
+######################################################################################################################################################
+- name: Firewall rule to allow SMB on TCP port 445
+  win_firewall_rule:
+    name: SMB
+    localport: 445
+    action: allow
+    direction: in
+    protocol: tcp
+    state: present
+    enabled: yes
+
+- name: Firewall rule to allow SMB on TCP port 139
+  win_firewall_rule:
+    name: SMB
+    localport: 445
+    action: allow
+    direction: in
+    protocol: tcp
+    state: present
+    enabled: yes
+
+- name: Firewall rule to allow ICMP v4 (ping)
+  win_firewall_rule:
+    name: ICMP Allow incoming V4 echo request
+    enabled: yes
+    state: present
+    profiles: private
+    action: allow
+    direction: in
+    protocol: icmpv4

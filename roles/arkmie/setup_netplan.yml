@@ -1,12 +1,31 @@
 ####################################################################
 # Setup monitoring interface
 ####################################################################
-- name: Backup netplan config
+- name: Check if monitoring interface config exists
+  stat:
+    path: '/etc/netplan/51-traffic-monitor.yaml'
+  register: mon_int_config
+
+- name: Print MAC address of monitoring interface
+  debug:
+    msg: "{{  ansible_facts[monitoring_interface].macaddress }}"
+  when: not mon_int_config.stat.exists
 
 - name: Get monitoring interface MAC address
   set_fact:
-    monitoring_interface_mac_address: "{{ ansible_interfaces['ens6'].mac_address }}"
+    monitoring_interface_mac_address: "{{ ansible_facts[monitoring_interface].macaddress }}"
+  when: not mon_int_config.stat.exists
 
 - name: Copy monitoring interface config
+  template:
+    src: 'conf/arkmie/51-traffic-monitor.yaml'
+    dest: '/etc/netplan/51-traffic-monitor.yaml'
+  when: not mon_int_config.stat.exists
+
+- name: Test netplan config
+  shell: 'netplan try --timeout 3'
+  when: not mon_int_config.stat.exists
 
 - name: Restart netplan
+  shell: netplan apply
+  when: not mon_int_config.stat.exists

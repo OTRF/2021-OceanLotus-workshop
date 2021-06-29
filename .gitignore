@@ -5,3 +5,7 @@ terraform/terraform.*
 conf/tls/*
 !conf/tls/openssl.cnf
 .DS_Store
+ChooseYourSIEMAdventure/
+group_vars/corp.yml
+group_vars/windows.yml
+group_vars/sec_tools.yml

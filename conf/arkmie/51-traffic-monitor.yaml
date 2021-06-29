@@ -5,10 +5,10 @@
 # network: {config: disabled}
 network:
     ethernets:
-        ens6:
+        {{ monitoring_interface }}:
             dhcp4: false
             dhcp6: false
             match:
-                macaddress: {{ MAC_ADDRESS }}
-            set-name: ens6
+                macaddress: {{ monitoring_interface_mac_address }}
+            set-name: {{ monitoring_interface }}
     version: 2
