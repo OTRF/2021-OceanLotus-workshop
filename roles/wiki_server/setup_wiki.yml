@@ -1,0 +1,37 @@
+
+####################################################################
+# Install/Setup Confluence with Docker
+####################################################################
+- name: Install jsondiff
+  pip:
+    name: jsondiff
+    executable: pip3 
+
+- name: Create Docker directory
+  file:
+    path: /srv/docker/wiki
+    state: directory
+
+- name: Copy docker-compose
+  template:
+    src: 'conf/wiki_server/docker-compose-swarm.yml'
+    dest: '/srv/docker/wiki/docker-compose-swarm.yml'
+
+- name: Deploy stack from a compose file
+  docker_stack:
+    state: present
+    name: dokuwiki
+    compose:
+      - /srv/docker/wiki/docker-compose-swarm.yml
+
+- name: Dokuwiki healthcheck
+  uri:
+    url: "http://127.0.0.1:80"
+    follow_redirects: none
+    method: GET
+    remote_src: yes
+    status_code: 200
+  register: _result
+  until: _result.status == 200
+  retries: 720 # 720 * 5 seconds = 1hour (60*60/5)
+  delay: 5 # Every 5 seconds

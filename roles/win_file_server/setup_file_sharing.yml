@@ -1,0 +1,29 @@
+##################################################
+# Create public share
+##################################################
+- name: Create directory structure
+  ansible.windows.win_file:
+    path: 'C:\shares\{{ item }}'
+    state: directory
+  with_items:
+    - 'public'
+    - 'private'
+
+- name: Add public company share
+  ansible.windows.win_share:
+    name: public
+    description: Files for company employees
+    path: C:\shares\public
+    list: yes
+    full: Users,Administrators
+
+##################################################
+# Create private share
+##################################################
+- name: Add secret share
+  ansible.windows.win_share:
+    name: private
+    description: top secret share
+    path: C:\shares\private
+    list: no
+    full: Administrators

@@ -1,0 +1,9 @@
+- hosts: 'logstash_ingestor'
+  become: yes
+  become_user: root
+  tasks:
+    - include_vars: 'group_vars/sec_tools.yml'
+    - include_vars: 'group_vars/corp.yml'
+    #- import_tasks: 'roles/init.yml'                              # Init Linux host
+    #- import_tasks: 'roles/logstash_ingestor/setup_logstash.yml'  # Install/Setup Logstash
+    - import_tasks: 'roles/logstash_ingestor/setup_ufw.yml'       # Setup UFW

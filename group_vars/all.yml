@@ -1,3 +1,4 @@
 ###################################################### General ######################################################
 base_domain: 'huntapples.com'
+external_domain: 'huntapples.com'
 timezone: 'Etc/UTC'

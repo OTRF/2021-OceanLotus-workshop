@@ -1,0 +1,7 @@
+###################################################### Docker ######################################################
+docker_gpg_key: 'https://download.docker.com/linux/ubuntu/gpg'
+docker_repo_url: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'
+
+###################################################### File server ######################################################
+win_file_server_password: 'Changeme123!'
+win_file_server_admin_password: 'Changeme123!'

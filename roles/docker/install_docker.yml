@@ -1,0 +1,59 @@
+########################################################################
+# Install/Setup Docker
+########################################################################
+- name: Remove old versions of Docker
+  package:
+    name: '{{ item }}'
+    state: absent
+  with_items:
+    - docker
+    - docker-engine 
+    - docker.io
+
+- name: Install things
+  package:
+    name: '{{ item }}'
+    state: latest
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+    - python3
+    - python3-pip
+
+- name: Add an Apt signing key for Docker
+  apt_key:
+    url: '{{ docker_gpg_key }}'
+    state: present
+
+- name: Add Docker repo
+  apt_repository:
+    repo: '{{ docker_repo_url }}'
+    state: present
+
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+
+- name: Install Docker
+  package:
+    name: '{{ item }}'
+    state: latest
+  with_items:
+    - docker-ce
+
+- name: Start Docker service
+  service:
+    name: docker
+    state: restarted
+    enabled: yes
+
+- name: Install docker-compose
+  pip:
+    name: docker-compose
+    executable: pip3   
+
+- name: Init a new swarm with default parameters
+  community.docker.docker_swarm:
+    state: present

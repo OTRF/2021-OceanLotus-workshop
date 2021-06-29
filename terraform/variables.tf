@@ -9,7 +9,7 @@ variable "vpcCIDRblock" {
 }
 
 variable "availabilityZone" {
-  default = "us-east-2a"
+  default = "us-east-2b"
 }
 
 variable "instanceTenancy" {
@@ -69,8 +69,7 @@ variable "siem_servers_map" {
     "splunk" = "172.16.43.100",
     "elastic" = "172.16.43.110",
     "graylog" = "172.16.43.120",
-    "nsm_box" = "172.16.43.20"
-    "logstash_ingestor" = "172.16.43.10"
+    "arkmie" = "172.16.43.130"
   }
 }
 
@@ -78,7 +77,6 @@ variable "management_subnet_map" {
   type = map
   default = {
     "jumpbox" = "172.16.21.100",
-    "grafana" = "172.16.21.101",
     "red_team_box_alpha" = "172.16.21.200",
     "red_team_box_beta" = "172.16.21.201"
   }
@@ -87,11 +85,11 @@ variable "management_subnet_map" {
 variable "corp_servers_map" {
   type = map
   default = {
+    "logstash_ingestor" = "172.16.50.10"
+    "win_file_sever" = "172.16.50.20"
+    "wiki_server" = "172.16.50.30"
     "macos_alpha" = "172.16.50.130"
     "macos_beta" = "172.16.50.131"
     "macos_charlie" = "172.16.50.132"
-    "windows_server" = "172.16.50.10"
-    "file_sever" = "172.16.50.20"
-    "wiki_server" = "172.16.50.30"
   }
 }

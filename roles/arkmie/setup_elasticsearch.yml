@@ -1,0 +1,57 @@
+####################################################################
+# Install/Setup Elasticsearch
+####################################################################
+- name: Add Elastic GPG key
+  apt_key:
+    url: "{{ elasticsearch_oss_gpg_url }}"
+    state: present
+
+- name: Add Elastic repo
+  apt_repository:
+    repo: "{{ elasticsearch_oss_repo_url }}"
+    state: present
+
+- name: Install Elasticsearch OSS
+  apt:
+    name: 'elasticsearch-oss={{ elasticsearch_oss_version }}'
+    state: present
+    
+- name: Calculate half the memory of the VM
+  debug:
+    msg: '{{ ((ansible_memtotal_mb/2000) | round | int)  }}G'
+
+- name: Setting the initial size of the toal heapsize for Elasticsearch
+  lineinfile:
+    path: /etc/elasticsearch/jvm.options
+    regexp: '^-Xmx'
+    line: '-Xmx{{ ((ansible_memtotal_mb/2000) | round | int)  }}G'
+
+- name: Setting the maximum size of the toal heapsize for Elasticsearch
+  lineinfile:
+    path: /etc/elasticsearch/jvm.options
+    regexp: '^-Xms'
+    line: '-Xmx{{ ((ansible_memtotal_mb/2000) | round | int)  }}G'
+
+- name: Set to single node mode
+  lineinfile:
+    path: /etc/elasticsearch/elasticsearch.yml
+    line: 'discovery.type: single-node'
+    create: yes
+
+- name: Restart Elasticsearch
+  service:
+    name: 'elasticsearch'
+    state: 'restarted'
+    enabled: yes
+
+- name: Elasticsearch healthcheck
+  uri:
+    url: "http://127.0.0.1:9200/_cluster/health"
+    follow_redirects: none
+    method: GET
+    remote_src: yes
+    status_code: 200
+  register: _result
+  until: _result.status == 200
+  retries: 720 # 720 * 5 seconds = 1hour (60*60/5)
+  delay: 5 # Every 5 seconds

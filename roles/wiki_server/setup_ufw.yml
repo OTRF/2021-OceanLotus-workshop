@@ -1,5 +1,5 @@
 ####################################################################
-# Setup monitoring interface
+# Install/Setup UFW
 ####################################################################
 - name: Setup Ubuntu UFW firewall
   ufw:
@@ -9,26 +9,22 @@
 - name: Allow HTTP
   ufw:
     rule: allow
-    name: 'NGINX http'
-
-- name: Allow HTTPS
-  ufw:
-    rule: allow
-    name: 'NGINX https'
+    port: '80'
+    proto: tcp
 
 - name: Enable UFW
   community.general.ufw:
     state: enabled
 
-
-- name: NGINX Let's Encrypt healthcheck
+- name: HTTP healthcheck
   uri:
-    url: "https://arkmie.{{ external_domain }}:443"
+    url: "http://{{ ansible_default_ipv4.address }}:80/"
     follow_redirects: none
     method: GET
-    validate_certs: 'yes'
-    status_code: 401
+    validate_certs: 'no'
+    status_code: 200
+    remote_src: yes
   register: _result
-  until: "'Unauthorized' in _result.msg"
+  until: _result.status == 200
   retries: 720 # 720 * 5 seconds = 1hour (60*60/5)
   delay: 5 # Every 5 seconds

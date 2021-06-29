@@ -1,0 +1,25 @@
+version: "3.9"
+services: 
+  ################################################### Confluence ###################################################
+  dokuwiki:
+    image: docker.io/bitnami/dokuwiki:20200729
+    networks: 
+      - default
+    ports: 
+      - 80:8080
+    volumes:
+      - dokuwiki-app-data:/bitnami/dokuwiki
+    deploy:
+      resources:
+        limits:
+          memory: 150M
+        reservations:
+          memory: 100M
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 50
+        window: 120s
+
+volumes: 
+  dokuwiki-app-data:

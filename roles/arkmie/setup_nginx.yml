@@ -1,9 +1,15 @@
 ####################################################################
-# Install/Setup NGINX
+# Install NGINX
 ####################################################################
 - name: Install NGINX
+  apt:
+    name: 'nginx'
+    state: latest
 
-- name: Generate OpenSSL pub cert and priv key
+- name: remove default nginx default
+  file: 
+    path: /etc/nginx/sites-enabled/default 
+    state: absent
 
 - name: Copy NGINX.conf
   template:
@@ -13,6 +19,172 @@
     group: root
     mode: 0400
 
+- name: Restart NGINX
+  service:
+    name: 'nginx'
+    enabled: yes
+    state: restarted
+
+####################################################################
+# Install/Setup Let's Encrypt
+# https://devops4solutions.medium.com/automate-letsencrypt-ssl-installation-with-ansible-for-multiple-domains-8453f2c3212d
+# https://medium.com/@gmaliar/generating-lets-encrypt-certificates-for-nginx-using-ansible-9fd27b90993a
+####################################################################
+- name: Check if Let's Encrypt account key exists
+  stat:
+    path: /etc/letsencrypt
+  register: letsencrypt_dir
+
+- name: Create Let's Encrypt directory
+  file:
+    path: '/etc/letsencrypt/{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: u=rwx,g=x,o=x
+  with_items:
+    - account
+    - certs
+    - csrs
+    - keys
+    - live
+  when: letsencrypt_dir.stat.exists == False
+
+################### Generate Let's Encrypt account key  ###################
+- name: Check if Let's Encrypt account key exists
+  stat:
+    path: /etc/letsencrypt/account/le-account.key
+  register: letsencrypt_account_key
+
+- name: Generate an Let's Encrypt account key
+  community.crypto.openssl_privatekey:
+    path: /etc/letsencrypt/account/le-account.key
+    type: RSA
+    size: 4096
+  when: letsencrypt_account_key.stat.exists == False
+
+################### Generate private key for arkmie domain ###################
+- name: Check if private key for arkmie.{{ external_domain }} domain exists
+  stat:
+    path: /etc/letsencrypt/keys/arkmie.{{ external_domain }}.key
+  register: letsencrypt_priv_key
+
+- name: Generate private key for arkmie.{{ external_domain }} domain
+  community.crypto.openssl_privatekey:
+    path: /etc/letsencrypt/keys/arkmie.{{ external_domain }}.key
+    type: RSA
+    size: 4096
+  when: letsencrypt_priv_key.stat.exists == False
+
+################### Generate Let's Encrypt CSR ###################
+- name: Check if CSR for arkmie.{{ external_domain }} domain exists
+  stat:
+    path: /etc/letsencrypt/csrs/arkmie.{{ external_domain }}.csr
+  register: letsencrypt_csr
+
+- name: Generate CSR for arkmie.{{ external_domain }} domain exists
+  community.crypto.openssl_csr:
+    path: /etc/letsencrypt/csrs/arkmie.{{ external_domain }}.csr
+    privatekey_path: /etc/letsencrypt/keys/arkmie.{{ external_domain }}.key
+    common_name: arkmie.{{ external_domain }}
+    subject_alt_name: 'DNS:arkmie.{{ external_domain }}'
+  when: letsencrypt_csr.stat.exists == False
+
+################### Let's Encrypt challenge ###################
+- name: Check if fullchain for arkmie.{{ external_domain }} domain exists
+  stat:
+    path: "/etc/letsencrypt/certs/fullchain_arkmie.{{ external_domain }}.crt"
+  register: letsencrypt_fullchain
+
+- name: Begin Let's Encrypt challenges
+  community.crypto.acme_certificate:
+    acme_directory: "https://acme-v02.api.letsencrypt.org/directory"
+    acme_version: 2
+    account_key_src: "/etc/letsencrypt/account/le-account.key"
+    account_email: "admin@{{ external_domain }}"
+    terms_agreed: 1
+    challenge: "http-01"
+    csr: "/etc/letsencrypt/csrs/arkmie.{{ external_domain }}.csr"
+    dest: "/etc/letsencrypt/certs/arkmie.{{ external_domain }}.crt"
+    fullchain_dest: "/etc/letsencrypt/certs/fullchain_arkmie.{{ external_domain }}.crt"
+    remaining_days: 91
+  register: acme_challenge_your_domain
+  when: letsencrypt_fullchain.stat.exists == False
+
+################### Create acme-challenge directory ###################
+- name: "Create .well-known/acme-challenge directory"
+  file:
+    path: /var/www/html/.well-known/acme-challenge
+    state: directory
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=rx
+  when: letsencrypt_fullchain.stat.exists == False
+
+- debug:
+    msg: "{{ acme_challenge_your_domain }}"
+  when: letsencrypt_fullchain.stat.exists == False
+
+- name: "Implement http-01 challenge files"
+  copy:
+    content: "{{ acme_challenge_your_domain['challenge_data'][item]['http-01']['resource_value'] }}"
+    dest: "/var/www/html/{{ acme_challenge_your_domain['challenge_data'][item]['http-01']['resource'] }}"
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  with_items:
+    - "arkmie.{{ external_domain }}"
+  when: letsencrypt_fullchain.stat.exists == False
+
+- name: Copy NGINX config for Let's Encrypt
+  template: 
+    src: "conf/arkmie/nginx/lets-encrypt.conf"
+    dest: "/etc/nginx/conf.d/lets-encrypt.conf"
+  when: letsencrypt_fullchain.stat.exists == False
+
+- name: Start NGINX
+  service:
+    name: 'nginx'
+    enabled: yes
+    state: restarted
+  when: letsencrypt_fullchain.stat.exists == False
+
+################### Complete Let's Encrypt challenges ###################
+- name: Check if chain for arkmie.{{ external_domain }} domain exists
+  stat:
+    path: "/etc/letsencrypt/certs/chain_arkmie.{{ external_domain }}.crt"
+  register: letsencrypt_chain
+  when: letsencrypt_fullchain.stat.exists == False
+
+- name: "Complete Let's Encrypt challenges"
+  community.crypto.acme_certificate:
+    acme_directory: https://acme-v02.api.letsencrypt.org/directory
+    acme_version: 2
+    account_key_src: "/etc/letsencrypt/account/le-account.key"
+    account_email: "admin@{{ external_domain }}"
+    challenge: "http-01"
+    csr: "/etc/letsencrypt/csrs/arkmie.{{ external_domain }}.csr"
+    dest: "/etc/letsencrypt/certs/arkmie.{{ external_domain }}.crt"
+    chain_dest: "/etc/letsencrypt/certs/chain_arkmie.{{ external_domain }}.crt"
+    fullchain_dest: "/etc/letsencrypt/certs/fullchain_arkmie.{{ external_domain }}.crt"
+    data: "{{ acme_challenge_your_domain }}"
+  when: letsencrypt_fullchain.stat.exists == False
+
+- name: remove let's encrypt nginx config
+  file: 
+    path: "/etc/nginx/conf.d/lets-encrypt.conf"
+    state: absent
+
+- name: Start NGINX
+  service:
+    name: 'nginx'
+    enabled: yes
+    state: restarted
+  when: letsencrypt_fullchain.stat.exists == False
+
+####################################################################
+# Setup NGINX
+####################################################################
 - name: Copy NGINX config for Arkmie
   template:
     src: 'conf/arkmie/nginx/arkmie.conf'
@@ -21,21 +193,22 @@
     group: root
     mode: 0400
 
-
-- name: Start NGINX
+- name: Restart NGINX
   service:
     name: 'nginx'
     enabled: yes
     state: restarted
 
-- name: NGINX healthcheck
+- name: NGINX Let's Encrypt healthcheck
   uri:
     url: "https://127.0.0.1:443"
     follow_redirects: none
     method: GET
     validate_certs: 'no'
-    status_code: 200
+    status_code: 401
   register: _result
-  until: _result.status == 200
+  until: "'Unauthorized' in _result.msg"
   retries: 720 # 720 * 5 seconds = 1hour (60*60/5)
   delay: 5 # Every 5 seconds
+
+  
