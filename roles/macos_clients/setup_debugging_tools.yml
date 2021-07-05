@@ -1,0 +1,27 @@
+#################################################################
+# Install/Setup homebrew
+#################################################################
+- name: Stat brew binary
+  stat:
+    path: '/usr/local/bin/brew'
+  register: brew_bin
+
+- name: Install homebrew
+  shell: yes | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  become: yes
+  become_user: "{{ ansible_facts.env.SUDO_USER }}"
+  when: brew_bin.stat.exists == False
+
+- name: Instal debugging tools
+  community.general.homebrew:
+    name: "{{ item }}"
+    state: present
+  become: yes
+  become_user: "{{ ansible_facts.env.SUDO_USER }}"
+  with_items:
+    - 'nmap'
+    - 'homebrew/cask/visual-studio-code'
+    - 'homebrew/cask/firefox'
+    - 'homebrew/cask/iterm2'
+    - 'wireshark'
+  failed_when: '"brew reinstall" is not in msg'

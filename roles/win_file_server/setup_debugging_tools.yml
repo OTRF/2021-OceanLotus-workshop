@@ -1,0 +1,23 @@
+##################################################
+# Install debugging tools
+##################################################
+# http://www.ntweekly.com/2020/09/09/install-chocolatey-with-ansible-on-windows-hosts/
+# Can't believe this worked
+- name: Install chocolatey
+  win_chocolatey:
+    name:
+      - chocolatey
+      - chocolatey-core.extension
+    state: present
+
+- name: Install debug tools
+  win_chocolatey:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - 'firefox'
+    - 'wireshark'
+    - 'winpcap'
+    - 'vscode'
+    - 'sysinternals'
+

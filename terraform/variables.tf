@@ -24,6 +24,10 @@ variable "dnsHostNames" {
   default = true
 }
 
+variable "internalCorpDomain" {
+  default = "hac.local"
+}
+
 variable "ubunut-ami" {
   # Ubuntu 20.04
   # https://cloud-images.ubuntu.com/locator/ec2/

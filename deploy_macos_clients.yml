@@ -1,0 +1,8 @@
+- hosts: 'macos_clients'
+  become: yes
+  become_user: root
+  tasks:
+    - include_vars: 'group_vars/sec_tools.yml'
+    #- import_tasks: 'roles/macos_clients/setup_debugging_tools.yml'
+    - import_tasks: 'roles/macos_clients/setup_osquery.yml'
+    - import_tasks: 'roles/macos_clients/setup_filebeat.yml'

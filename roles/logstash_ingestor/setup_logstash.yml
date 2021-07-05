@@ -1,59 +1,139 @@
 ####################################################################
 # Install/Setup Logstash
 ####################################################################
-# - name: Add Elastic GPG key
-#   apt_key:
-#     url: "{{ elastic_gpg_url }}"
-#     state: present
+- name: Add Elastic GPG key
+  apt_key:
+    url: "{{ elastic_gpg_url }}"
+    state: present
 
-# - name: Add Elastic repo
-#   apt_repository:
-#     repo: "{{ elastic_repo_url }}"
-#     state: present
+- name: Add Elastic repo
+  apt_repository:
+    repo: "{{ elastic_repo_url }}"
+    state: present
 
-# - name: Install Logstash
-#   apt:
-#     name: 'logstash=1:{{ elastic_version }}-1'
-#     state: present
+- name: Install Logstash
+  apt:
+    name: 'logstash=1:{{ elastic_version }}-1'
+    state: present
 
-# - name: Install Logstash plugins
-#   shell: '/usr/share/logstash/bin/logstash-plugin install {{ item }}'
-#   with_items:
-#     - 'logstash-filter-json_encode'
-#     - 'logstash-output-lumberjack'
-    
+- name: Install Logstash plugins
+  shell: '/usr/share/logstash/bin/logstash-plugin install {{ item }}'
+  with_items:
+    - 'logstash-filter-json_encode'
+    - 'logstash-output-lumberjack'
 
 ####################################################################
-# Copy TLS private key and cert
+# Generate TLS private key and cert
 ####################################################################
-# - name: Create Logstash TLS directory
-#   file:
-#     path: '/etc/logstash/tls'
-#     state: directory
-#     owner: logstash
-#     group: logstash
+- name: Check if Logstash public certificate exists
+  stat:
+    path: /etc/logstash/tls/logstash.crt
+  register: logstash_public_cert
+
+- name: Create Logstash TLS directory
+  file:
+    path: '/etc/logstash/tls'
+    state: directory
+    owner: logstash
+    group: logstash
+  when: logstash_public_cert.stat.exists == False
     
-# - name: Generate an OpenSSL private key for Logstash
-#   openssl_privatekey:
-#     path: /etc/logstash/tls/logstash.key
-#     size: 4096
-#     type: RSA
+- name: Generate an OpenSSL private key for Logstash
+  openssl_privatekey:
+    path: /etc/logstash/tls/logstash.key
+    size: 4096
+    type: RSA
+    format: 'pkcs8'
+    owner: logstash
+    group: logstash
+  when: logstash_public_cert.stat.exists == False
 
-# - name: Generate an OpenSSL Certificate Signing Request with Subject information for Logstash
-#   openssl_csr:
-#     path: /etc/logstash/tls/logstash.csr
-#     privatekey_path: /etc/logstash/tls/logstash.key
-#     country_name: "US"
-#     organization_name: "{{ base_domain }}"
-#     email_address: "admin@{{ base_domain }}"
-#     common_name: "logstash.{{ base_domain }}"
+- name: Generate an OpenSSL Certificate Signing Request with Subject information for Logstash
+  openssl_csr:
+    path: /etc/logstash/tls/logstash.csr
+    privatekey_path: /etc/logstash/tls/logstash.key
+    country_name: "US"
+    organization_name: "{{ base_domain }}"
+    email_address: "admin@{{ base_domain }}"
+    common_name: "logstash.{{ base_domain }}"
+  when: logstash_public_cert.stat.exists == False
 
-# - name: Generate a Self Signed OpenSSL certificate for Logstash
-#   openssl_certificate:
-#     path: /etc/logstash/tls/logstash.crt
-#     privatekey_path: /etc/logstash/tls/logstash.key
-#     csr_path: /etc/logstash/tls/logstash.csr
-#     provider: selfsigned
+- name: Generate a Self Signed OpenSSL certificate for Logstash
+  openssl_certificate:
+    path: /etc/logstash/tls/logstash.crt
+    privatekey_path: /etc/logstash/tls/logstash.key
+    csr_path: /etc/logstash/tls/logstash.csr
+    provider: selfsigned
+    owner: logstash
+    group: logstash
+  when: logstash_public_cert.stat.exists == False
+
+####################################################################
+# Get Logstash certificates from Elastic
+####################################################################
+- name: Check if Logstash public certificate exists
+  stat:
+    path: /etc/ssl/certs/logstash-elastic.crt
+  register: logstash_elastic_public_certs
+
+- name: Get Elastic public certificate
+  community.crypto.get_certificate:
+    host: "{{ groups.elastic[0] }}"
+    port: "5044"
+  run_once: true
+  register: cert_elastic
+  when: logstash_elastic_public_certs.stat.exists == False
+
+- name: Write cert contents to disk
+  copy: 
+    content: "{{ cert_elastic.cert }}" 
+    dest: /etc/ssl/certs/logstash-elastic.crt
+  when: logstash_elastic_public_certs.stat.exists == False
+
+####################################################################
+# Get Logstash certificates from Graylog
+####################################################################
+- name: Check if Logstash public certificate exists
+  stat:
+    path: /etc/ssl/certs/logstash-graylog.crt
+  register: logstash_graylog_public_certs
+
+- name: Get Elastic public certificate
+  community.crypto.get_certificate:
+    host: "{{ groups.graylog[0] }}"
+    port: "5044"
+  run_once: true
+  register: cert_graylog
+  when: logstash_graylog_public_certs.stat.exists == False
+
+- name: Write cert contents to disk
+  copy: 
+    content: "{{ cert_graylog.cert }}" 
+    dest: /etc/ssl/certs/logstash-graylog.crt
+    owner: 
+  when: logstash_graylog_public_certs.stat.exists == False
+
+####################################################################
+# Get Logstash certificates from Splunk
+####################################################################
+- name: Check if Logstash public certificate exists
+  stat:
+    path: /etc/ssl/certs/logstash-splunk.crt
+  register: logstash_splunk_public_certs
+
+- name: Get Elastic public certificate
+  community.crypto.get_certificate:
+    host: "{{ groups.splunk[0] }}"
+    port: "5044"
+  run_once: true
+  register: cert_splunk
+  when: logstash_splunk_public_certs.stat.exists == False
+
+- name: Write cert contents to disk
+  copy: 
+    content: "{{ cert_splunk.cert }}" 
+    dest: /etc/ssl/certs/logstash-splunk.crt
+  when: logstash_splunk_public_certs.stat.exists == False
 
 ####################################################################
 # Copy Logstash pipeline
@@ -76,13 +156,17 @@
 #   with_fileglob:
 #     - conf/logstash_filters/*.conf
 
-- name: Copy Logstash output config
+- name: Copy Elastic output config
   template:
     src: "conf/logstash_ingestor/31-output-logstash.conf"
-    dest: "/etc/logstash/conf.d/31-output-logstash.conf"
+    dest: "/etc/logstash/conf.d/31-output-logstash-{{ item }}.conf"
     owner: logstash
     group: logstash
     mode: 0400
+  with_items:
+    - 'elastic'
+    - 'splunk'
+    - 'graylog'
 
 ####################################################################
 # Restart service

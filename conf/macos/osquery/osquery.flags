@@ -1,0 +1,10 @@
+--allow_unsafe
+--config_path=/var/osquery/osquery.conf
+--events_max=500000
+--watchdog_memory_limit=350
+--disable_audit=false
+--disable_events=false
+--audit_allow_config
+--host_identifier=hostname
+--logger_plugin=filesystem
+--verbose=true

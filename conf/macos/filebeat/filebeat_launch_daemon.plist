@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.elastic.filebeat</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/local/bin/filebeat</string>
+        <string>-c</string>
+        <string>/etc/filebeat/filebeat.yml</string>
+        <string>--path.config</string> 
+        <string>/etc/filebeat</string> 
+        <string>--path.home</string>  
+        <string>/usr/local/share/filebeat</string> 
+        <string>--path.logs</string> 
+        <string>/var/log/filebeat</string> 
+    </array>
+    <key>KeepAlive</key>
+    <true/>
+</dict>
+</plist>

@@ -14,7 +14,21 @@ elasticsearch_oss_version: '7.10.2'
 elasticsearch_oss_gpg_url: 'https://artifacts.elastic.co/GPG-KEY-elasticsearch'
 elasticsearch_oss_repo_url: 'deb https://artifacts.elastic.co/packages/oss-7.x/apt stable main' 
 
-###################################################### Osquery ######################################################
+###################################################### Splunk ######################################################
+# command: `uuidgen`
+splunk_hec_token: 'F0245386-0B36-48D8-89EC-2D9AB0367671'
 
+###################################################### Osquery ######################################################
+osquery_version: '4.9.0'
+osquery_dl_url: 'https://pkg.osquery.io/darwin/osquery-{{ osquery_version }}.pkg'
 
 ###################################################### Filebeat ######################################################
+filebeat_version: '7.13.2'
+filebeat_dl_url: 'https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-{{ filebeat_version }}-darwin-x86_64.tar.gz'
+
+###################################################### Winlogbeat ######################################################
+winlogbeat_version: '7.13.2'
+winlogbeat_dl_url: 'https://artifacts.elastic.co/downloads/beats/winlogbeat/winlogbeat-{{ winlogbeat_version }}-windows-x86_64.zip'
+
+###################################################### Sysmon ######################################################
+sysmon_dl_url: 'https://download.sysinternals.com/files/Sysmon.zip'

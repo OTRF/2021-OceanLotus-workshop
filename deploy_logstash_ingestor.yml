@@ -4,6 +4,22 @@
   tasks:
     - include_vars: 'group_vars/sec_tools.yml'
     - include_vars: 'group_vars/corp.yml'
-    #- import_tasks: 'roles/init.yml'                              # Init Linux host
-    #- import_tasks: 'roles/logstash_ingestor/setup_logstash.yml'  # Install/Setup Logstash
-    - import_tasks: 'roles/logstash_ingestor/setup_ufw.yml'       # Setup UFW
+    #- include_vars: 'ChooseYourSIEMAdventure/group_vars/all.yml'
+    # - import_tasks: 'roles/init.yml'                                  # Init Linux host
+    # - import_tasks: 'roles/docker/install_docker.yml'                 # Install Docker
+    # - import_tasks: 'roles/logstash_ingestor/setup_logging_stack.yml' # Setup Logstash and Kafka via Docker
+    # ##- import_tasks: 'roles/logstash_ingestor/setup_logstash.yml'     # Install/Setup Logstash
+    # - import_tasks: 'roles/logstash_ingestor/setup_ufw.yml'           # Setup UFW
+    
+    #### Setup Elastic ####
+    #- import_tasks: 'roles/logstash_ingestor/setup_elastic.yml'
+    #  delegate_to: "{{ groups.elastic[0] }}"
+
+    #### Setup Graylog ####
+    #- import_tasks: 'roles/logstash_ingestor/setup_kafka_input.yml'
+    #  delegate_to: "{{ groups.graylog[0] }}"
+
+    #### Setup Splunk ####
+    # Create Splunk HEC inputs
+    #- import_tasks: 'roles/logstash_ingestor/setup_splunk_hec.yml'
+    #  delegate_to: "{{ groups.splunk[0] }}"
