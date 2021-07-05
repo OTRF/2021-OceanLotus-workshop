@@ -1,0 +1,105 @@
+#################################################################
+# Install/Setup Filebeat
+#################################################################
+- name: Stat Filebeat
+  stat:
+    path: '/usr/local/bin/filebeat'
+  register: filebeat_bin
+
+# https://www.elastic.co/guide/en/beats/filebeat/current/directory-layout.html#_default_paths
+- name: Create Filebeat directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - '/usr/local/share/filebeat'             # Home 
+    - '/etc/filebeat'                         # Config
+    - '/var/lib/filebeat'                     # Data
+    - '/var/log/filebeat'                     # Logs
+    - '/tmp/filebeat-{{ filebeat_version }}'  # TAR directory
+
+- name: Download Filebeat
+  get_url:
+    url: "{{ filebeat_dl_url }}"
+    dest: /tmp/filebeat-{{ filebeat_version }}-darwin-x86_64.tar.gz
+  when: filebeat_bin.stat.exists == False
+
+- name: UNtart Filebeat
+  shell: 'tar -xvzf filebeat-{{ filebeat_version }}-darwin-x86_64.tar.gz'
+  args:
+    chdir: '/tmp'
+    warn: false
+  when: filebeat_bin.stat.exists == False
+
+- name: Copy contents to Filebeat config directory
+  copy:
+    src: '/tmp/filebeat-{{ filebeat_version }}-darwin-x86_64/{{ item }}'
+    dest: '/etc/filebeat/{{ item }}'
+    remote_src: 'yes'
+  with_items:
+    - 'fields.yml'
+    - 'filebeat.reference.yml'
+    - 'filebeat.yml'
+    - 'modules.d/'
+  when: filebeat_bin.stat.exists == False
+
+- name: Copy contents to Filebeat HOME directory
+  copy:
+    src: '/tmp/filebeat-{{ filebeat_version }}-darwin-x86_64/{{ item }}'
+    dest: '/usr/local/share/filebeat/{{ item }}'
+    remote_src: 'yes'
+  with_items:
+    - 'module/'
+    - 'kibana/'
+    - 'LICENSE.txt'
+    - 'NOTICE.txt'
+    - 'README.md'
+  when: filebeat_bin.stat.exists == False
+
+- name: Copy Filebeat bin
+  copy:
+    src: '/tmp/filebeat-{{ filebeat_version }}-darwin-x86_64/filebeat'
+    dest: '/usr/local/bin/filebeat'
+    mode: 0755
+    owner: 'root'
+    group: 'root'
+    remote_src: 'yes'
+  when: filebeat_bin.stat.exists == False
+
+- name: Copy Filebeat config
+  template:
+    src: 'conf/macos/filebeat/filebeat.yml'
+    dest: '/etc/filebeat/filebeat.yml'
+  register: filebeat_config
+
+- name: Copy Filbeat launch daemon
+  template:
+    src: 'conf/macos/filebeat/filebeat_launch_daemon.plist'
+    dest: '/Library/LaunchDaemons/com.elastic.filebeat.plist'
+    owner: 'root'
+    group: 'wheel'
+    mode: 0600
+  register: filebeat_plist
+
+- name: Enable Osquery module
+  copy:
+    src: '/etc/filebeat/modules.d/osquery.yml.disabled'
+    dest: '/etc/filebeat/modules.d/osquery.yml'
+    remote_src: yes
+
+- name: Test Filebeat config
+  shell: '/usr/local/bin/filebeat test config -c /etc/filebeat/filebeat.yml'
+  when:
+   - filebeat_config.changed
+
+- name: Enable Filebeat via LaunchCTL
+  community.general.launchd:
+    name: com.elastic.filebeat
+    state: restarted
+  when:
+   - filebeat_config.changed or filebeat_plist.changed
+
+- name: Filebeat healthcheck
+  wait_for:
+    path: /var/log/filebeat/filebeat.1
+    search_regex: 'filebeat start running'

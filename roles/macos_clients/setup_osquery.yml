@@ -1,0 +1,77 @@
+#################################################################
+# Install/Setup osquery
+#################################################################
+- name: Stat Osquery binary
+  stat:
+    path: '/usr/local/bin/osqueryd'
+  register: osquery_bin
+
+- name: Download Osquery
+  get_url:
+    url: "{{ osquery_dl_url }}"
+    dest: /tmp/osquery-{{ osquery_version }}.pkg
+  when: osquery_bin.stat.exists == False
+
+- name: Install Osquery
+  shell: "installer -pkg /tmp/osquery-{{ osquery_version }}.pkg -target /"
+  when: osquery_bin.stat.exists == False
+
+- name: Copy macos Osquery flags
+  template:
+    src: 'conf/macos/osquery/osquery.flags'
+    dest: '/var/osquery/osquery.flags'
+    owner: 'root'
+    group: 'wheel'
+    mode: '0600'
+  register: osquery_flags
+
+- name: Copy macos Osquery config
+  template:
+    src: 'conf/macos/osquery/osquery.conf'
+    dest: '/var/osquery/osquery.conf'
+    owner: 'root'
+    group: 'wheel'
+    mode: '0600'
+  register: osquery_conf
+
+- name: Copy Osquery Launch plist
+  copy:
+    src: '/var/osquery/com.facebook.osqueryd.plist'
+    dest: '/Library/LaunchDaemons/com.facebook.osqueryd.plist'
+    owner: 'root'
+    group: 'wheel'
+    remote_src: 'yes'
+
+- name: Stop Osquey via LaunchCTL
+  community.general.launchd:
+    name: com.facebook.osqueryd
+    state: stopped
+  when: 
+    - osquery_conf.changed or osquery_flags.changed
+
+- name: Test Osquery config
+  shell: '/usr/local/bin/osqueryctl config-check'
+  when: 
+    - osquery_conf.changed or osquery_flags.changed
+
+# - name: Enable Full disk access (FDA)
+
+- name: Copy Osquery Launch plist
+  copy:
+    src: '/var/osquery/com.facebook.osqueryd.plist'
+    dest: '/Library/LaunchDaemons/com.facebook.osqueryd.plist'
+    owner: 'root'
+    group: 'wheel'
+    remote_src: 'yes'
+
+- name: Enable Osquey via LaunchCTL
+  community.general.launchd:
+    name: com.facebook.osqueryd
+    state: restarted
+  when: 
+    - osquery_conf.changed or osquery_flags.changed
+
+- name: Filebeat healthcheck
+  wait_for:
+    path: /var/log/osquery/osqueryd.INFO
+    search_regex: 'Running on machine'

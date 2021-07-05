@@ -1,7 +1,25 @@
-######################################################################################################################################################
+##########################################################
 # Add firewall rules for file sharing
-######################################################################################################################################################
-- name: Firewall rule to allow SMB on TCP port 445
+##########################################################
+- name: Firewall rules to allow hMail
+  win_firewall_rule:
+    name: hMail - {{ item.name }}
+    localport: "{{ item.port }}"
+    action: allow
+    direction: in
+    protocol: tcp
+    state: present
+    enabled: yes
+  with_items:
+    - { name: 'SMTP', port: 25 }
+    - { name: 'SMTP SSL/TLS', port: 465 }
+    - { name: 'SMTP Submission', port: 587 }
+    - { name: 'POP3', port: 110 }
+    - { name: 'POP3 SSL/TLS', port: 995 }
+    - { name: 'IMAP', port: 143 }
+    - { name: 'IMAP SSL/TLS', port: 993 }
+    
+- name: Firewall rule to allow SMB/File sharing
   win_firewall_rule:
     name: SMB
     localport: 445
@@ -10,16 +28,9 @@
     protocol: tcp
     state: present
     enabled: yes
-
-- name: Firewall rule to allow SMB on TCP port 139
-  win_firewall_rule:
-    name: SMB
-    localport: 445
-    action: allow
-    direction: in
-    protocol: tcp
-    state: present
-    enabled: yes
+  with_items:
+    - 445
+    - 139
 
 - name: Firewall rule to allow ICMP v4 (ping)
   win_firewall_rule:

@@ -1,0 +1,166 @@
+####################################################################
+# Generate TLS private key and cert for Logstash
+####################################################################
+- name: Check if Logstash public certificate exists
+  stat:
+    path: /etc/ssl/certs/logstash.crt
+  register: logstash_public_cert
+    
+- name: Generate an OpenSSL private key for Logstash
+  openssl_privatekey:
+    path: /etc/ssl/private/logstash.key
+    size: 4096
+    type: RSA
+    format: 'pkcs8'
+    owner: logstash
+    group: logstash
+  when: logstash_public_cert.stat.exists == False
+
+- name: Generate an OpenSSL Certificate Signing Request with Subject information for Logstash
+  openssl_csr:
+    path: /etc/ssl/certs/logstash.csr
+    privatekey_path: /etc/ssl/private/logstash.key
+    country_name: "US"
+    organization_name: "{{ base_domain }}"
+    email_address: "admin@{{ base_domain }}"
+    common_name: "logstash.{{ base_domain }}"
+  when: logstash_public_cert.stat.exists == False
+
+- name: Generate a Self Signed OpenSSL certificate for Logstash
+  openssl_certificate:
+    path: /etc/ssl/certs/logstash.crt
+    privatekey_path: /etc/ssl/private/logstash.key
+    csr_path: /etc/ssl/certs/logstash.csr
+    provider: selfsigned
+    owner: logstash
+    group: logstash
+  when: logstash_public_cert.stat.exists == False
+
+####################################################################
+# Docker secrets
+####################################################################
+- name: Read logstash-tls-key
+  ansible.builtin.slurp:
+    src: /etc/ssl/private/logstash.key
+  register: tls_key
+
+- name: Create logstash-tls-key
+  community.docker.docker_secret:
+    name: logstash-tls-key
+    data: "{{ tls_key['content'] }}"
+    data_is_b64: true
+    state: present
+
+- name: Read logstash-tls-cert
+  ansible.builtin.slurp:
+    src: /etc/ssl/certs/logstash.crt
+  register: tls_cert
+
+- name: Create logstash-tls-cert
+  community.docker.docker_secret:
+    name: logstash-tls-cert
+    data: "{{ tls_cert['content'] }}"
+    data_is_b64: true
+    state: present
+
+####################################################################
+# Generate TLS private key and cert for Logstash
+####################################################################
+- name: Create Docker directory
+  file:
+    path: /srv/docker/logstash/conf.d
+    state: directory
+
+- name: Copy Logstash config
+  template:
+    src: 'conf/logstash_ingestor/logstash.yml'
+    dest: '/srv/docker/logstash/conf.d/logstash.yml'
+    mode: 600
+
+- name: Copy Logstash input
+  template:
+    src: 'conf/logstash_ingestor/02-input-beats.conf'
+    dest: '/srv/docker/logstash/conf.d/02-input-beats.conf'
+    mode: 600
+
+- name: Copy Logstash output
+  template:
+    src: 'conf/logstash_ingestor/30-output-kafka.conf'
+    dest: '/srv/docker/logstash/conf.d/30-output-kafka.conf'
+    mode: 600
+
+####################################################################
+# Docker configs
+####################################################################
+- name: Create Docker directory
+  file:
+    path: /srv/docker/logstash
+    state: directory
+
+- name: Read Logstash config
+  ansible.builtin.slurp:
+    src: /srv/docker/logstash/conf.d/logstash.yml
+  register: logstash_config
+
+- name: Create logstash-config
+  community.docker.docker_config:
+    name: logstash-config
+    data: "{{ logstash_config['content'] }}"
+    data_is_b64: true
+    state: present
+
+- name: Read logstash-input
+  ansible.builtin.slurp:
+    src: /srv/docker/logstash/conf.d/02-input-beats.conf
+  register: logstash_input
+
+- name: Create logstash-input
+  community.docker.docker_config:
+    name: logstash-input
+    data: "{{ logstash_input['content'] }}"
+    data_is_b64: true
+    state: present
+
+- name: Read logstash-output
+  ansible.builtin.slurp:
+    src: /srv/docker/logstash/conf.d/30-output-kafka.conf
+  register: logstash_output
+
+- name: Create logstash-output
+  community.docker.docker_config:
+    name: logstash-output
+    data: "{{ logstash_output['content'] }}"
+    data_is_b64: true
+    state: present
+
+####################################################################
+# Deploy stack
+####################################################################
+- name: Install jsondiff
+  pip:
+    name: jsondiff
+    executable: pip3 
+
+- name: Copy docker-compose
+  template:
+    src: 'conf/logstash_ingestor/docker-compose-swarm.yml'
+    dest: '/srv/docker/logstash/docker-compose-swarm.yml'
+
+- name: Deploy stack from a compose file
+  docker_stack:
+    state: present
+    name: logstash-kafka
+    compose:
+      - /srv/docker/logstash/docker-compose-swarm.yml
+
+- name: Logstash healthcheck
+  uri:
+    url: "http://127.0.0.1:9600"
+    follow_redirects: none
+    method: GET
+    remote_src: yes
+    status_code: 200
+  register: _result
+  until: _result.status == 200
+  retries: 720 # 720 * 5 seconds = 1hour (60*60/5)
+  delay: 5 # Every 5 seconds

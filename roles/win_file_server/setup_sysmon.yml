@@ -1,0 +1,43 @@
+##################################################
+# Install/Setup Sysmon
+##################################################
+- name: Check for Sysmon service
+  win_service:
+    name: Sysmon64
+  register: sysmon_svc
+
+- name: Download Sysmon
+  win_get_url:
+    url: '{{ sysmon_dl_url }}'
+    dest: "{{ ansible_env.TEMP }}\\Sysmon.zip"
+  when: sysmon_svc.name is not defined
+
+- name: Unzip Sysmon
+  win_unzip:
+    src: "{{ ansible_env.TEMP }}\\Sysmon.zip"
+    dest: "{{ ansible_env.TEMP }}"
+  when: sysmon_svc.name is not defined
+
+- name: Copy Sysmon config
+  win_template:
+    src: "conf/win_file_server/sysmonconfig-export.xml"
+    dest: "{{ ansible_env.TEMP }}\\sysmonconfig-export.xml"
+
+- name: Install Sysmon and load config
+  win_shell: '.\Sysmon64.exe -accepteula -i .\sysmonconfig-export.xml'
+  args:
+    chdir: "{{ ansible_env.TEMP }}"
+  when: sysmon_svc.name is not defined
+
+- name: Load new config for Sysmon
+  win_shell: '.\Sysmon64.exe -c .\sysmonconfig-export.xml'
+  args:
+    chdir: "{{ ansible_env.TEMP }}"
+  when: sysmon_svc.name is defined
+  
+- name: Restart and enable Sysmon servuce
+  win_service:
+    name: 'Sysmon64'
+    state: restarted
+    start_mode: 'auto'
+  when: sysmon_svc.name is not defined

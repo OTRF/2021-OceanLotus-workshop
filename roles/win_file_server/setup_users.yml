@@ -4,15 +4,16 @@
 - name: Create normal users
   ansible.windows.win_user:
     name: "{{ item.username }}"
+    fullname: "{{ item.fullname }}"
     password: "{{ item.password }}"
     state: present
     groups:
       - Users
   with_items:
-    - { username: 'IronMan', password: '{{ win_file_server_password }}' }
-    - { username: 'CaptainAmerica', password: '{{ win_file_server_password }}' }
-    - { username: 'Thor', password: '{{ win_file_server_password }}' }
-    - { username: 'CaptainMarvel', password: '{{ win_file_server_password }}' }
+    - { username: 'jso-yeon', fullname: "Jeon So-yeon", password: '{{ win_file_server_password }}' }
+    - { username: 'lmanoban', fullname: "Lalisa Manoban", password: '{{ win_file_server_password }}' }
+    #- { username: 'Thor', password: '{{ win_file_server_password }}' }
+    #- { username: 'CaptainMarvel', password: '{{ win_file_server_password }}' }
 
 ##################################################
 # Create admin users
@@ -20,13 +21,13 @@
 - name: Create administrator users
   ansible.windows.win_user:
     name: "{{ item.username }}"
+    fullname: "{{ item.fullname }}"
     password: "{{ item.password }}"
     state: present
     groups:
       - Users
       - Administrators
   with_items:
-    - { username: 'Thanos', password: '{{ win_file_server_admin_password }}' }
-    - { username: 'Hulk', password: '{{ win_file_server_admin_password }}' }
-    - { username: 'BlackWidow', password: '{{ win_file_server_admin_password }}' }
-    - { username: 'HawkEye', password: '{{ win_file_server_admin_password }}' }
+    - { username: 'dengziqi', fullname: "Dèngzǐqí", password: '{{ win_file_server_admin_password }}' }
+    #- { username: 'Thanos', password: '{{ win_file_server_admin_password }}' }
+    #- { username: 'BlackWidow', password: '{{ win_file_server_admin_password }}' }

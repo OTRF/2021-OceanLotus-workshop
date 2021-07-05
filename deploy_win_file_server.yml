@@ -1,7 +1,11 @@
 - hosts: 'win_file_sever'
   tasks:
     - include_vars: 'group_vars/sec_tools.yml'      
-    - include_vars: 'group_vars/corp.yml'              
-    - import_tasks: 'roles/win_file_server/setup_users.yml'         # Create users
-    - import_tasks: 'roles/win_file_server/setup_file_sharing.yml'  # Setup file share
-    - import_tasks: 'roles/win_file_server/setup_win_firewall.yml'  # Setup firewall
+    - include_vars: 'group_vars/corp.yml'
+    - import_tasks: 'roles/win_file_server/setup_debugging_tools.yml' # Setup debugging tools             
+    - import_tasks: 'roles/win_file_server/setup_users.yml'          # Create users
+    - import_tasks: 'roles/win_file_server/setup_file_sharing.yml'   # Setup file share
+    - import_tasks: 'roles/win_file_server/setup_sysmon.yml'         # Install Sysmon
+    - import_tasks: 'roles/win_file_server/setup_winlogbeat.yml'     # Install Winlogbeat
+    - import_tasks: 'roles/win_file_server/setup_hmail_server.yml'    # Install hMail server
+    - import_tasks: 'roles/win_file_server/setup_win_firewall.yml'   # Setup firewall

@@ -2,6 +2,16 @@
 docker_gpg_key: 'https://download.docker.com/linux/ubuntu/gpg'
 docker_repo_url: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'
 
+###################################################### Mail server ######################################################
+hMailServer_dl_url: "https://www.hmailserver.com/download_getfile/?performdownload=1&downloadid=262"
+mysql_hMailServer_password: 'Changeme123!'
+
 ###################################################### File server ######################################################
 win_file_server_password: 'Changeme123!'
 win_file_server_admin_password: 'Changeme123!'
+
+###################################################### Logstash ingestor ######################################################
+elastic_version: 7.13.0
+elastic_repo_version: '7.x'
+elastic_gpg_url: 'https://artifacts.elastic.co/GPG-KEY-elasticsearch'
+elastic_repo_url: 'deb https://artifacts.elastic.co/packages/{{ elastic_repo_version }}/apt stable main'

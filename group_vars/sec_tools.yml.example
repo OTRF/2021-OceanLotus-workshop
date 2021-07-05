@@ -15,6 +15,14 @@ elasticsearch_oss_gpg_url: 'https://artifacts.elastic.co/GPG-KEY-elasticsearch'
 elasticsearch_oss_repo_url: 'deb https://artifacts.elastic.co/packages/oss-7.x/apt stable main' 
 
 ###################################################### Osquery ######################################################
-osquery_version: '4.9.0'
+
 
 ###################################################### Filebeat ######################################################
+
+
+###################################################### Winlogbeat ######################################################
+winlogbeat_version: '7.13.2'
+winlogbeat_dl_url: 'https://artifacts.elastic.co/downloads/beats/winlogbeat/winlogbeat-{{ winlogbeat_version }}-windows-x86_64.zip'
+
+###################################################### Sysmon ######################################################
+sysmon_dl_url: 'https://download.sysinternals.com/files/Sysmon.zip'

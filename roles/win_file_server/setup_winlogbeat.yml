@@ -1,0 +1,48 @@
+##################################################
+# Install/Setup Winlogbeat
+##################################################
+- name: Winlogbeat stat executable
+  ansible.builtin.win_stat:
+    path: 'C:\Program Files\winlogbeat\winlogbeat.exe'
+  register: winlogbeat_exe
+
+- name: Download Winlogbeat
+  win_get_url:
+    url: "{{ winlogbeat_dl_url }}"
+    dest: "{{ ansible_env.TEMP }}\\winlogbeat-{{ winlogbeat_version }}-windows-x86_64.zip"
+  when: winlogbeat_exe.stat.exists == False
+
+- name: Unzip Winlogbeat
+  win_unzip:
+    src: "{{ ansible_env.TEMP }}\\winlogbeat-{{ winlogbeat_version }}-windows-x86_64.zip"
+    dest: "{{ ansible_env.TEMP }}\\winlogbeat-{{ winlogbeat_version }}-windows-x86_64"
+  when: winlogbeat_exe.stat.exists == False
+
+- name: Copy Winlogbeat directory
+  win_copy:
+    src: "{{ ansible_env.TEMP }}\\winlogbeat-{{ winlogbeat_version }}-windows-x86_64\\winlogbeat-{{ winlogbeat_version }}-windows-x86_64\\"
+    dest: 'C:\Program Files\winlogbeat'
+    remote_src: yes
+  when: winlogbeat_exe.stat.exists == False
+
+- name: Copy Winlogbeat config
+  win_template:
+    src: 'conf/win_file_server/winlogbeat.yml'
+    dest: 'C:\Program Files\winlogbeat\winlogbeat.yml'
+
+- name: Check for Winlogbeat service
+  win_service:
+    name: winlogbeat
+  register: winlogbeat_svc
+
+- name: Install Winlogbeat with script
+  win_shell: 'powershell -Exec bypass -File .\install-service-winlogbeat.ps1'
+  args:
+    chdir: 'C:\Program Files\winlogbeat'
+  when: winlogbeat_svc.name is not defined
+
+- name: Restart and enable Winlogbeat
+  win_service:
+    name: 'winlogbeat'
+    start_mode: auto
+    state: restarted

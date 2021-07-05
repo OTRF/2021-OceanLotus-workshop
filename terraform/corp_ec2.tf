@@ -25,9 +25,17 @@ resource "aws_security_group" "logstash_ingestor_server_sg" {
     from_port   = 5044
     to_port     = 5044
     protocol    = "tcp"
-    cidr_blocks = [var.corpCIDRblock]
+    cidr_blocks = [var.corpCIDRblock, "${aws_instance.jump_box.private_ip}/32"]
   }
  	
+  # Allow SIEMs to consume logs from Kafka
+	ingress {
+    from_port   = 9092
+    to_port     = 9092
+    protocol    = "tcp"
+    cidr_blocks = [var.publicCIDRblock, "${aws_instance.jump_box.private_ip}/32"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0

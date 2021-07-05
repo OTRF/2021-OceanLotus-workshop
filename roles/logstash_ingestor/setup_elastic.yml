@@ -1,0 +1,34 @@
+####################################################################
+# Setup kafka as the input
+####################################################################
+- name: Copy Kafka input config
+  template:
+    src: 'conf/logstash_ingestor/03-input-kafka.conf'
+    dest: '/etc/logstash/conf.d/03-input-kafka.conf'
+    owner: logstash
+    group: logstash
+
+- name: Remove BEATs input
+  file:
+    path: "/etc/logstash/conf.d/{{ item }}"
+    state: absent
+  with_items:
+    - '02-input-beats.conf'
+
+##################################################################
+# Modify Logstash output with HEC tokens
+##################################################################
+# - name: Copy Logstash outputs
+#   template:
+#     src: 'conf/splunk/30-output-logstash-service.conf'
+#     dest: '/etc/logstash/conf.d/31-output-splunk-hec.conf'
+#     owner: 'logstash'
+#     group: 'logstash'
+#     mode: 0640
+
+# - name: Restart Logstash
+#   service:
+#     name: logstash
+#     enabled: yes
+#     state: restarted
+  
