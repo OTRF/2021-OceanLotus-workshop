@@ -66,7 +66,7 @@ This Ansible playbook will allocate half of the systems memory to Elasticsearch.
   1. Leave everything as default
   1. ![Graylog Osquery index](https://holdmybeersecurity.com/wp-content/uploads/2021/01/Screen-Shot-2021-01-27-at-5.21.42-PM-300x280.png)
   1. Select "Save"
-1. Repeat the steps above to create an index called "test"
+1. Repeat the steps above to create an index called "test" and "sysmon
 
 ### Create streams
 1. Select "Streams" at the top
@@ -89,3 +89,35 @@ This Ansible playbook will allocate half of the systems memory to Elasticsearch.
 1. Select "I’m done" in bottom left
 1. Select "Start stream" for Osquery stream
 1. Repeat the steps above for test
+
+### Create input for Kafka
+1. System > Inputs
+1. Select "Raw/Plaintext Kafka" from Input drop down
+1. Select "Launch new input"
+  1. Enter `Kafka input` into Title
+  1. UNcheck `Legacy Mode`
+  1. Enter `172.16.50.10:9092` into Bootstrap servers
+  1. Enter `127.0.0.1:2181` into Zookeeper address
+  1. Enter `osquery` into topic filter regex
+  1. ![graylog_kafka_input](../.img/graylog_kafka_input.png)
+  1. Select "Save"
+1. Repeat the steps above to create an index called "test" and "sysmon
+
+
+
+## References
+* []()
+* []()
+* []()
+* []()
+* []()
+* []()
+* []()
+* []()
+* []()
+* []()
+* []()
+* []()
+* []()
+* []()
+* []()

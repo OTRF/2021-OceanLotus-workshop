@@ -11,10 +11,14 @@ TO test this deployment on a local VM and ingest logs into the SIEMS you `NEED` 
     1. ![macos_client_openvpn](../.img/macos_client_openvpn.png)
 
 ## Init playbook
-osqueyr version
+1. `git clone git@github.com:OTRF/macos-workshop`
+1. `cd macos-workshop`
+1. `vim host.ini` and append the macOS IP address under `[macos_clients]`
 
 ## Run playbook
-
+1. `ansible-playbook -i hosts.ini deploy_macos_clients.yml -u threathunter -K`
+    1. Enter password
+    
 ## Grant OsqueryD full disk access
 1. Open Finder
 1. Select "GO" at the top then "Go to Folder..."
@@ -28,12 +32,12 @@ osqueyr version
     1. Stop Osqueryd service
 1. `launchctl load /Library/LaunchDaemons/com.facebook.osqueryd.plist`
     1. Start Osqueryd service
+
+## Test Osquery and Filebeat
 1. `filebeat test output -c /etc/filebeat/filebeat.yml`
     1. Test Filebeat + Logstash + OpenVPN connection
     1. ![filebeat_test_output](../.img/filebeat_test_output.png)
 1. `kafkacat -C -b 172.16.50.10:9092 -t osquery -C`
-
-
 
 ## References
 ### Filebeat
@@ -63,7 +67,7 @@ osqueyr version
 * [community.general.launchd – Manage macOS services](https://docs.ansible.com/ansible/latest/collections/community/general/launchd_module.html)
 * [osquery-configuration/Classic/Endpoints/MacOS/osquery_no_tls.flags](https://github.com/palantir/osquery-configuration/blob/master/Classic/Endpoints/MacOS/osquery_no_tls.flags)
 * [Installing on macOS](https://osquery.readthedocs.io/en/stable/installation/install-macos/)
-* []()
+* [Deploying Osquery Part 2 - The basics, cont.](https://blog.securelyinsecure.com/post/deploying-osquery-pt2/)
 * []()
 * []()
 * []()

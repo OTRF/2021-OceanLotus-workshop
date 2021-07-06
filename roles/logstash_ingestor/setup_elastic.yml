@@ -3,7 +3,7 @@
 ####################################################################
 - name: Copy Kafka input config
   template:
-    src: 'conf/logstash_ingestor/03-input-kafka.conf'
+    src: 'conf/elastic/03-input-kafka.conf'
     dest: '/etc/logstash/conf.d/03-input-kafka.conf'
     owner: logstash
     group: logstash
@@ -14,21 +14,13 @@
     state: absent
   with_items:
     - '02-input-beats.conf'
+    - '10-filter-zeek.conf'
+    - '11-filter-sysmon.conf'
+    - '13-filter-osquery.conf'
 
-##################################################################
-# Modify Logstash output with HEC tokens
-##################################################################
-# - name: Copy Logstash outputs
-#   template:
-#     src: 'conf/splunk/30-output-logstash-service.conf'
-#     dest: '/etc/logstash/conf.d/31-output-splunk-hec.conf'
-#     owner: 'logstash'
-#     group: 'logstash'
-#     mode: 0640
-
-# - name: Restart Logstash
-#   service:
-#     name: logstash
-#     enabled: yes
-#     state: restarted
+- name: Restart Logstash
+  service:
+    name: logstash
+    enabled: yes
+    state: restarted
   

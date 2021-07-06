@@ -1,0 +1,54 @@
+#####################################################################
+# Setup Graylog Beats input
+#####################################################################
+- name: Check if Beats input exists
+  uri:
+    url: http://127.0.0.1:9000/api/system/inputs
+    user: "{{ siem_username }}"
+    password: "{{ siem_password }}"
+    force_basic_auth: yes
+    method: GET
+    return_content: yes
+  register: input_list
+  until: input_list.status == 200
+  retries: 100
+  delay: 1
+
+- name: Create Beats input
+  uri:
+    url: http://127.0.0.1:9000/api/system/inputs
+    user: "{{ siem_username }}"
+    password: "{{ siem_password }}"
+    force_basic_auth: yes
+    method: POST
+    headers:
+      X-Requested-By: "cli"
+    return_content: true
+    status_code: 201
+    body_format: json
+    body: |
+      {
+        "title": "Kafka {{ item }} input",
+        "type": "org.graylog2.inputs.raw.kafka.RawKafkaInput",
+        "global": true,
+        "configuration": {
+          "topic_filter": "{{ item }}",
+          "fetch_wait_max": 100,
+          "offset_reset": "largest",
+          "zookeeper": "",
+          "threads": 2,
+          "custom_properties": "",
+          "group_id": "graylog2",
+          "throttling_allowed": false,
+          "fetch_min_bytes": 5,
+          "legacy_mode": false,
+          "override_source": null,
+          "bootstrap_server": "172.16.50.10:9092"
+        },
+        "node": null
+      }
+  with_items:
+    - 'sysmon'
+    - 'osquery'
+    - 'test'
+  when: input_list.json.total != 4

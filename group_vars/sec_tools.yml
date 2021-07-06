@@ -14,6 +14,13 @@ elasticsearch_oss_version: '7.10.2'
 elasticsearch_oss_gpg_url: 'https://artifacts.elastic.co/GPG-KEY-elasticsearch'
 elasticsearch_oss_repo_url: 'deb https://artifacts.elastic.co/packages/oss-7.x/apt stable main' 
 
+###################################################### Log ingestor ######################################################
+confluent_version: '6.2'
+confluent_gpg_key: 'https://packages.confluent.io/deb/{{ confluent_version }}/archive.key'
+confluent_repo_url: 'deb [arch=amd64] https://packages.confluent.io/deb/{{ confluent_version }} stable main'
+
+
+
 ###################################################### Splunk ######################################################
 # command: `uuidgen`
 splunk_hec_token: 'F0245386-0B36-48D8-89EC-2D9AB0367671'

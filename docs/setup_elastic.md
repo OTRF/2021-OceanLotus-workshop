@@ -49,3 +49,35 @@ This Ansible playbook will allocate half of the systems memory to Elasticsearch.
   1. Select `viewer` for roles
   1. ![Create Elastic workshop user](../.img/elastic_create_workshop_user.png)
   1. Select "Create user"
+
+## Create index patterns
+1. Open browser to `https://elastic.<external domain>` and login
+  1. Enter `elastic` for username
+  1. Enter `<ealstic user password generated during Ansible playbook - cat /tmp/elasticsearch-setup-passwords.txt>`
+1. Settings > Management > Stack Management
+1. Kibana > Index patterns
+1. Select "Create index patterns" in the top-right
+  1. Define an index pattern
+    1. Enter `osquery-*` into index pattern name
+    1. ![elastic_osquery_index_pattern](../.img/elastic_osquery_index_pattern.png)
+  1. Configure settings
+    1. Select `@timestamp` for Time field
+  1. Select "Create index pattern"
+1. Repeat for `sysmon` and `test`
+
+## References
+* []()
+* []()
+* []()
+* []()
+* []()
+* []()
+* []()
+* []()
+* []()
+* []()
+* []()
+* []()
+* []()
+* []()
+* []()

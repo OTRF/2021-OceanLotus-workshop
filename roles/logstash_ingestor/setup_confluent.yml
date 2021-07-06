@@ -1,0 +1,62 @@
+####################################################################
+# Add Confluent repo
+####################################################################
+# - name: Add Confluent GPG key
+#   ansible.builtin.apt_key:
+#     url: "{{ confluent_gpg_key }}"
+#     state: present
+
+# - name: Add Confluent repo
+#   ansible.builtin.apt_repository:
+#     repo: "{{ confluent_repo_url }}"
+#     state: present
+
+####################################################################
+# Install/Setup Zookeeper
+####################################################################
+- name: Install Confluent
+  apt:
+    name: ['default-jdk','confluent-platform']
+    state: present
+
+- name: Copy Zookeeper config
+  template:
+    src: 'conf/logstash_ingestor/zookeeper/zookeeper.properties'
+    dest: '/etc/kafka/zookeeper.properties'
+    owner: 'root'
+    group: 'root'
+    mode: 0644
+
+- name: Start and enable Zookeeper
+  service:
+    name: 'confluent-zookeeper'
+    enabled: yes
+    state: restarted
+
+- name: Kafka healthcheck
+  wait_for:
+    port: 2182
+    delay: 10
+
+####################################################################
+# Install/Setup Kafka
+####################################################################
+- name: Copy Kafka config
+  template:
+    src: 'conf/logstash_ingestor/kafka/server.properties'
+    dest: '/etc/kafka/server.properties'
+    owner: 'root'
+    group: 'root'
+    mode: 0644
+
+- name: Start and enable Kafka
+  service:
+    name: 'confluent-server'
+    enabled: yes
+    state: restarted
+
+- name: Kafka healthcheck
+  wait_for:
+    port: 9092
+    delay: 10
+

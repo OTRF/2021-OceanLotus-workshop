@@ -16,12 +16,6 @@
     name: 'logstash=1:{{ elastic_version }}-1'
     state: present
 
-- name: Install Logstash plugins
-  shell: '/usr/share/logstash/bin/logstash-plugin install {{ item }}'
-  with_items:
-    - 'logstash-filter-json_encode'
-    - 'logstash-output-lumberjack'
-
 ####################################################################
 # Generate TLS private key and cert
 ####################################################################
@@ -69,78 +63,11 @@
   when: logstash_public_cert.stat.exists == False
 
 ####################################################################
-# Get Logstash certificates from Elastic
-####################################################################
-- name: Check if Logstash public certificate exists
-  stat:
-    path: /etc/ssl/certs/logstash-elastic.crt
-  register: logstash_elastic_public_certs
-
-- name: Get Elastic public certificate
-  community.crypto.get_certificate:
-    host: "{{ groups.elastic[0] }}"
-    port: "5044"
-  run_once: true
-  register: cert_elastic
-  when: logstash_elastic_public_certs.stat.exists == False
-
-- name: Write cert contents to disk
-  copy: 
-    content: "{{ cert_elastic.cert }}" 
-    dest: /etc/ssl/certs/logstash-elastic.crt
-  when: logstash_elastic_public_certs.stat.exists == False
-
-####################################################################
-# Get Logstash certificates from Graylog
-####################################################################
-- name: Check if Logstash public certificate exists
-  stat:
-    path: /etc/ssl/certs/logstash-graylog.crt
-  register: logstash_graylog_public_certs
-
-- name: Get Elastic public certificate
-  community.crypto.get_certificate:
-    host: "{{ groups.graylog[0] }}"
-    port: "5044"
-  run_once: true
-  register: cert_graylog
-  when: logstash_graylog_public_certs.stat.exists == False
-
-- name: Write cert contents to disk
-  copy: 
-    content: "{{ cert_graylog.cert }}" 
-    dest: /etc/ssl/certs/logstash-graylog.crt
-    owner: 
-  when: logstash_graylog_public_certs.stat.exists == False
-
-####################################################################
-# Get Logstash certificates from Splunk
-####################################################################
-- name: Check if Logstash public certificate exists
-  stat:
-    path: /etc/ssl/certs/logstash-splunk.crt
-  register: logstash_splunk_public_certs
-
-- name: Get Elastic public certificate
-  community.crypto.get_certificate:
-    host: "{{ groups.splunk[0] }}"
-    port: "5044"
-  run_once: true
-  register: cert_splunk
-  when: logstash_splunk_public_certs.stat.exists == False
-
-- name: Write cert contents to disk
-  copy: 
-    content: "{{ cert_splunk.cert }}" 
-    dest: /etc/ssl/certs/logstash-splunk.crt
-  when: logstash_splunk_public_certs.stat.exists == False
-
-####################################################################
 # Copy Logstash pipeline
 ####################################################################
 - name: Copy Logstash input config
   template:
-    src: "conf/logstash_ingestor/02-input-beats.conf"
+    src: "conf/logstash_ingestor/logstash/02-input-beats.conf"
     dest: "/etc/logstash/conf.d/02-input-beats.conf"
     owner: logstash
     group: logstash
@@ -156,17 +83,13 @@
 #   with_fileglob:
 #     - conf/logstash_filters/*.conf
 
-- name: Copy Elastic output config
+- name: Copy Kafka output config
   template:
-    src: "conf/logstash_ingestor/31-output-logstash.conf"
-    dest: "/etc/logstash/conf.d/31-output-logstash-{{ item }}.conf"
+    src: "conf/logstash_ingestor/logstash/30-output-kafka.conf"
+    dest: "/etc/logstash/conf.d/30-output-kafka.conf"
     owner: logstash
     group: logstash
     mode: 0400
-  with_items:
-    - 'elastic'
-    - 'splunk'
-    - 'graylog'
 
 ####################################################################
 # Restart service
@@ -191,8 +114,5 @@
 
 - name: Logstash BEATs healthcheck
   wait_for:
-    host: '127.0.0.1'
-    port: '5044'
-    state: started         # Port should be open
-    delay: 30              # No wait before first check (sec)
-    timeout: 5       
+    port: 5044
+    delay: 10
