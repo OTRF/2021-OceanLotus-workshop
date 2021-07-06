@@ -3,7 +3,7 @@
 ####################################################################
 - name: Copy Kafka input config
   template:
-    src: 'conf/logstash_ingestor/03-input-kafka.conf'
+    src: 'conf/splunk/03-input-kafka.conf'
     dest: '/etc/logstash/conf.d/03-input-kafka.conf'
     owner: logstash
     group: logstash
@@ -16,69 +16,69 @@
 ####################################################################
 # Setup Splunk HEC
 ####################################################################
-- name: Stat HEC inputs.conf
-  stat:
-    path: '/opt/splunk/etc/apps/splunk_httpinput/local/inputs.conf'
-  register: splunk_hec_inputs_conf
+# - name: Stat HEC inputs.conf
+#   stat:
+#     path: '/opt/splunk/etc/apps/splunk_httpinput/local/inputs.conf'
+#   register: splunk_hec_inputs_conf
 
-- name: Create HEC local directory
-  file:
-    path: '/opt/splunk/etc/apps/splunk_httpinput/local'
-    state: directory
-    owner: 'splunk'
-    group: 'splunk'
-  when: splunk_hec_inputs_conf.stat.exists == False
+# - name: Create HEC local directory
+#   file:
+#     path: '/opt/splunk/etc/apps/splunk_httpinput/local'
+#     state: directory
+#     owner: 'splunk'
+#     group: 'splunk'
+#   when: splunk_hec_inputs_conf.stat.exists == False
 
-- name: Copy Splunk HEC system config
-  template:
-    src: 'conf/splunk/splunk-hec.conf'
-    dest: '/opt/splunk/etc/apps/splunk_httpinput/local/inputs.conf'
-    owner: 'splunk'
-    group: 'splunk'
-    mode: 0644
-  when: splunk_hec_inputs_conf.stat.exists == False
+# - name: Copy Splunk HEC system config
+#   template:
+#     src: 'conf/splunk/splunk-hec.conf'
+#     dest: '/opt/splunk/etc/apps/splunk_httpinput/local/inputs.conf'
+#     owner: 'splunk'
+#     group: 'splunk'
+#     mode: 0644
+#   when: splunk_hec_inputs_conf.stat.exists == False
 
-- name: Create Seach app local directory
-  file:
-    path: '/opt/splunk/etc/apps/search/local'
-    state: directory
-    owner: 'splunk'
-    group: 'splunk'
-  when: splunk_hec_inputs_conf.stat.exists == False
+# - name: Create Seach app local directory
+#   file:
+#     path: '/opt/splunk/etc/apps/search/local'
+#     state: directory
+#     owner: 'splunk'
+#     group: 'splunk'
+#   when: splunk_hec_inputs_conf.stat.exists == False
 
-- name: Copy Hec token config
-  template:
-    src: 'conf/splunk/hec-token.conf'
-    dest: '/opt/splunk/etc/apps/search/local/inputs.conf'
-    owner: 'splunk'
-    group: 'splunk'
-  register: result
+# - name: Copy Hec token config
+#   template:
+#     src: 'conf/splunk/hec-token.conf'
+#     dest: '/opt/splunk/etc/apps/search/local/inputs.conf'
+#     owner: 'splunk'
+#     group: 'splunk'
+#   register: result
   
-- name: Restart Splunk service
-  service:
-    name: 'splunk'
-    enabled: yes
-    state: restarted
-  when: result.changed
+# - name: Restart Splunk service
+#   service:
+#     name: 'splunk'
+#     enabled: yes
+#     state: restarted
+#   when: result.changed
 
-- name: Splunk HEC healthcheck
-  uri:
-    url: "http://127.0.0.1:8088/services/collector/health"
-    follow_redirects: none
-    method: GET
-    remote_src: yes
-    status_code: 200
-  register: _result
-  until: _result.status == 200
-  retries: 720 # 720 * 5 seconds = 1hour (60*60/5)
-  delay: 5 # Every 5 seconds
+# - name: Splunk HEC healthcheck
+#   uri:
+#     url: "http://127.0.0.1:8088/services/collector/health"
+#     follow_redirects: none
+#     method: GET
+#     remote_src: yes
+#     status_code: 200
+#   register: _result
+#   until: _result.status == 200
+#   retries: 720 # 720 * 5 seconds = 1hour (60*60/5)
+#   delay: 5 # Every 5 seconds
 
 ##################################################################
 # Modify Logstash output with HEC tokens
 ##################################################################
 - name: Copy Splunk HEC outputs
   template:
-    src: 'conf/splunk/30-output-logstash-service.conf'
+    src: 'conf/splunk/31-output-splunk-hec.conf'
     dest: '/etc/logstash/conf.d/31-output-splunk-hec.conf'
     owner: 'logstash'
     group: 'logstash'

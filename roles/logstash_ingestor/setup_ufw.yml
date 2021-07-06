@@ -12,6 +12,12 @@
     port: '5044'
     proto: tcp
   
+- name: Allow Kafka broker
+  ufw:
+    rule: allow
+    port: '9092'
+    proto: tcp
+  
 - name: Enable UFW
   community.general.ufw:
     state: enabled
