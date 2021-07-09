@@ -9,6 +9,16 @@ TO test this deployment on a local VM and ingest logs into the SIEMS you `NEED` 
 1. Import OpenVPN config
 1. Enter OpenVPN client password from Google sheet
     1. ![macos_client_openvpn](../.img/macos_client_openvpn.png)
+1. Run Ansible playbook
+
+## Creating dedicated hosts
+1. `aws ec2 allocate-hosts --instance-type mac1.metal --availability-zone <availabilityZone - terraform/variables.tf> --auto-placement on --quantity 3 --region <availabilityZone - terraform/variables.tf - leave AZ off>`
+    1. ![aws_allocate_dedicated_host](../.img/aws_allocate_dedicated_host.png)
+    1. ![aws_allocated_host_id](../.img/aws_allocated_host_id.png)
+    1. Copy the host ID and press `q`
+1. `vim terraform/variables.tf` scroll down to `macos_dedicated_hosts` section
+    1. Enter the host ID for one openings
+    1. ![terraform_macos_dedicated_hosts](../.img/terraform_macos_dedicated_hosts.png)
 
 ## Init playbook
 1. `git clone git@github.com:OTRF/macos-workshop`

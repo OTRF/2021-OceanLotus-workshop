@@ -34,11 +34,15 @@ variable "ubunut-ami" {
   default = "ami-00399ec92321828f5"
 }
 
+variable "macos-ami" {
+  # macOS Catalina 10.15.7
+  default = "ami-0dcfefad26e3bde40"
+}
+
 variable "windows-ami" {
   # Windows Sever 2019
   default = "ami-086850e3dda52e84a"
 }
-
 
 # Management subnet
 variable "managementCIDRblock" {
@@ -95,5 +99,14 @@ variable "corp_servers_map" {
     "macos_alpha" = "172.16.50.130"
     "macos_beta" = "172.16.50.131"
     "macos_charlie" = "172.16.50.132"
+  }
+}
+
+variable "macos_dedicated_hosts" {
+  type = map
+  default = {
+    "alpha" = "h-0e415c6b852501b57"
+    "beta" = "h-0701e0168dfc26ae6"
+    "charlie" = "h-08b1077ed75195124"
   }
 }

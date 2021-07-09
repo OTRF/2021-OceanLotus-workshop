@@ -1,0 +1,41 @@
+#################################################################
+# Create users
+# https://stackoverflow.com/questions/49618326/attempting-to-create-a-user-on-macos-via-ansible
+# https://www.jamf.com/jamf-nation/discussions/36279/set-specific-users-to-use-screen-sharing-through-command-lines
+#################################################################
+- name: Set username
+  set_fact:
+    username: "{{ user_list[ansible_facts.default_ipv4.address].username }}"
+    password: "{{ user_list[ansible_facts.default_ipv4.address].password }}"
+    fullname: "{{ user_list[ansible_facts.default_ipv4.address].fullname }}"
+    image: ""
+
+- name: Stat user
+  ansible.builtin.stat:
+    path: "/Users/{{ username }}"
+  register: user
+
+- name: Get next available User ID
+  shell: "echo $(dscl . -list /Users uid | awk '{print $2}' | sort -ug  | tail -1) + 1 | bc"
+  register: uid
+  when: user.stat.exists == False
+
+- name: Create user script
+  template: 
+    src: "conf/macos/newuser.sh"
+    dest: "/tmp/{{ username }}-{{ uid.stdout }}.sh"
+    mode: 0755
+  when: user.stat.exists == False
+
+- name: Make a the following {{ username }}:{{ uid.stdout }} on {{ ansible_facts.default_ipv4.address }}
+  shell: "/tmp/{{ username }}-{{ uid.stdout }}.sh creates=/Users/{{ username }}"
+  when: user.stat.exists == False
+
+- name: Remove the newuser script
+  file: 
+    path: "/tmp/{{ username }}-{{ uid.stdout }}.sh" 
+    state: absent
+  when: user.stat.exists == False
+
+- name: Set screen sahring for all users
+  shell: "dseditgroup -o delete -t group com.apple.access_screensharing  > /dev/null"

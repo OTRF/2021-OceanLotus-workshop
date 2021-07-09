@@ -1,0 +1,25 @@
+#################################################################
+# Copy SSH key for user
+#################################################################
+- name: Set username
+  set_fact:
+    username: "{{ user_list[ansible_facts.default_ipv4.address].username }}"
+
+- name: Create SSH directory
+  file:
+    path: "/Users/{{ username }}/.ssh"
+    state: directory
+    owner: "{{ username }}"
+    group: "staff"
+
+- name: Copy SSH private key
+  template:
+    src: 'files/comp_ssh_keys/id_rsa'
+    dest: '/Users/{{ username }}/.ssh/id_rsa'
+    mode: 0600
+
+- name: Copy SSH public key
+  template:
+    src: 'files/comp_ssh_keys/id_rsa.pub'
+    dest: '/Users/{{ username }}/.ssh/id_rsa.pub'
+    mode: 0644

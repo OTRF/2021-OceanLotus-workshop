@@ -5,6 +5,7 @@
 --disable_audit=false
 --disable_events=false
 --audit_allow_config
+--audit_allow_sockets
 --host_identifier=hostname
 --logger_plugin=filesystem
 --verbose=true

@@ -1,4 +1,41 @@
 #################################################################
+# Setup processes and sockets auditing with OpenBSM
+# https://osquery.readthedocs.io/en/stable/deployment/process-auditing/#auditing-processes-and-sockets-with-openbsm
+#################################################################
+- set_fact:
+    mac_hostnames:
+      "172.16.50.130": "alpha.{{ internal_domain }}"
+      "172.16.50.131": "beta.{{ internal_domain }}"
+      "172.16.50.132": "charlie.{{ internal_domain }}"
+
+- debug:
+    msg: "{{ mac_hostnames[ansible_facts.default_ipv4.address] }}"
+
+- name: Set hostname
+  shell: "scutil --set {{ item }} \"{{ mac_hostnames[ansible_facts.default_ipv4.address] }}\""
+  with_items:
+    - "ComputerName"
+    #- "LocalHostName"
+    - "HostName"
+
+- name: Flush DNS cache
+  shell: "dscacheutil -flushcache"
+
+- name: Copy macOS audit_control config
+  template:
+    src: 'conf/macos/osquery/audit_control.conf'
+    dest: '/etc/security/audit_control' 
+    owner: 'root'
+    group: 'wheel'
+    mode: 0400
+  register: audit_control
+
+- name: Reboot for OpenBSM changes to take effect
+  reboot:
+    reboot_timeout: 3600
+  when: audit_control.changed
+
+#################################################################
 # Install/Setup osquery
 #################################################################
 - name: Stat Osquery binary
@@ -47,14 +84,14 @@
     name: com.facebook.osqueryd
     state: stopped
   when: 
-    - osquery_conf.changed or osquery_flags.changed
+   - osquery_conf.changed or osquery_flags.changed
 
 - name: Test Osquery config
   shell: '/usr/local/bin/osqueryctl config-check'
   when: 
     - osquery_conf.changed or osquery_flags.changed
 
-# - name: Enable Full disk access (FDA)
+#- name: Enable Full disk access (FDA)
 
 - name: Copy Osquery Launch plist
   copy:
@@ -69,9 +106,23 @@
     name: com.facebook.osqueryd
     state: restarted
   when: 
-    - osquery_conf.changed or osquery_flags.changed
+   - osquery_conf.changed or osquery_flags.changed or audit_control.changed
 
-- name: Filebeat healthcheck
+- name: Osquery healthcheck
   wait_for:
     path: /var/log/osquery/osqueryd.INFO
     search_regex: 'Running on machine'
+
+- name: Osquery process_events thealthcheck
+  wait_for:
+    path: /var/log/osquery/osqueryd.results.log
+    search_regex: '{"name":"process_events"'
+
+- name: CULR google
+  uri:
+    url: http://www.google.com
+
+- name: Osquery socket_events thealthcheck
+  wait_for:
+    path: /var/log/osquery/osqueryd.results.log
+    search_regex: '{"name":"socket_events"'

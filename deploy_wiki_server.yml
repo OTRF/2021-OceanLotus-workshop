@@ -8,3 +8,4 @@
     - import_tasks: 'roles/docker/install_docker.yml'         # Install Docker
     - import_tasks: 'roles/wiki_server/setup_wiki.yml'        # Install/Setup Dokuwiki
     - import_tasks: 'roles/wiki_server/setup_ufw.yml'         # Setup UFW
+    - import_tasks: 'roles/wiki_server/copy_ssh_pub.yml'      # Copy SSH pub key

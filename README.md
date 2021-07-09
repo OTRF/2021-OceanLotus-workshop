@@ -16,7 +16,7 @@
 
 # Network diagram
 <p align="center">
-  <img width="460" height="300" src=".img/aws_network_diagram.png">
+  <img width="460" height="300" src=".img/OTR_DEFCON_2021_network_diagram.png">
 </p>
 
 # AWS resource limit increase requests
@@ -75,13 +75,22 @@ Let's discuss the hour pricing listed in the table below. It should be noted tha
 ## User table
 | # | Username | Pasword | account type | Description
 | --- | --- | --- | --- | --- | 
-| 1 | jso-yeon@hac.local | <password> | mail account | e-mail account | 
-| 2 | lmanoban@hac.local | <password> | mail account | e-mail account | 
-| 3 | dengziqi@hac.local | <password> | mail account | e-mail admin account | 
-| 4 | jso-yeon | <password> | SMB share | smb://172.16.50.20/public | 
-| 5 | lmanoban | <password> | SMB share | smb://172.16.50.20/public | 
-| 6 | dengziqi | <password> | SMB share | smb://172.16.50.20/private - admin | 
+| 1 | jso-yeon@hac.local | <group_vars/corp.yml - `user_list`> | mail account | e-mail account | 
+| 2 | lmanoban@hac.local | <group_vars/corp.yml - `user_list`> | mail account | e-mail account | 
+| 3 | dengziqi@hac.local | <group_vars/corp.yml - `user_list`> | mail account | e-mail admin account | 
+| 4 | jso-yeon | <group_vars/corp.yml - `user_list`> | SMB share | smb://172.16.50.20/public | 
+| 5 | lmanoban | <group_vars/corp.yml - `user_list`> | SMB share | smb://172.16.50.20/public | 
+| 6 | dengziqi | <group_vars/corp.yml - `user_list`> | SMB share | smb://172.16.50.20/private - admin | 
+| 7 | jso-yeon | <group_vars/corp.yml - `user_list`> | macos Alpha VNC | vnc://172.16.50.130 | 
+| 8 | lmanoban | <group_vars/corp.yml - `user_list`> | macos Beta VNC | vnc://172.16.50.131 | 
+| 9 | dengziqi | <group_vars/corp.yml - `user_list`> | macos Charlie VNC | vnc://172.16.50.132 | 
+| 10 | ec2-user | <group_vars/corp.yml - `vnc_admin_password`> | macos Alpha VNC | vnc://172.16.50.130 | 
+| 11 | ec2-user | <group_vars/corp.yml - `vnc_admin_password`> | macos Beta VNC | vnc://172.16.50.131 | 
+| 12 | ec2-user | <group_vars/corp.yml - `vnc_admin_password`> | macos Charlie VNC | vnc://172.16.50.132 | 
 
+## Generate SSH keys for red team exercise
+1. `cd macos-workshop`
+1. `ssh-keygen -t rsa -b 2048 -C "lmanoban@hac.local" -f files/comp_ssh_keys/id_rsa -q -N ""`
 
 ## Instructions to setup AWS environment
 1. [AWS + Terraform](docs/terraform.md)
@@ -141,6 +150,10 @@ The playbook instructions for these instances assume they are publicaly facing a
 * [chocolatey.chocolatey.win_chocolatey – Manage packages using chocolatey](https://docs.ansible.com/ansible/latest/collections/chocolatey/chocolatey/win_chocolatey_module.html)
 * [Ansible - Only do something if another action changed](https://raymii.org/s/tutorials/Ansible_-_Only-do-something-if-another-action-changed.html)
 * [community.general.launchd – Manage macOS services](https://docs.ansible.com/ansible/latest/collections/community/general/launchd_module.html)
+* [ansible.posix.authorized_key – Adds or removes an SSH authorized key](https://docs.ansible.com/ansible/latest/collections/ansible/posix/authorized_key_module.html)
+* [How to make Ansible run one certain task only on one host?](https://stackoverflow.com/questions/47342724/how-to-make-ansible-run-one-certain-task-only-on-one-host)
+* [ansible-playbooks/roles/new-user/tasks/create-user.yml](https://github.com/ideasonpurpose/ansible-playbooks/blob/master/roles/new-user/tasks/create-user.yml)
+* [ansible.builtin.fileglob – list files matching a pattern](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/fileglob_lookup.html)
 * []()
 * []()
 * []()

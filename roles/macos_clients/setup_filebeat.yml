@@ -62,7 +62,7 @@
     dest: '/usr/local/bin/filebeat'
     mode: 0755
     owner: 'root'
-    group: 'root'
+    group: 'wheel'
     remote_src: 'yes'
   when: filebeat_bin.stat.exists == False
 
@@ -99,7 +99,12 @@
   when:
    - filebeat_config.changed or filebeat_plist.changed
 
+- name: Enable Filebeat via LaunchCTL
+  community.general.launchd:
+    name: com.elastic.filebeat
+    state: started
+
 - name: Filebeat healthcheck
   wait_for:
-    path: /var/log/filebeat/filebeat.1
+    path: /var/log/filebeat/filebeat
     search_regex: 'filebeat start running'

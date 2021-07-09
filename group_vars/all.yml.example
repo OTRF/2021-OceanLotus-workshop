@@ -1,4 +1,4 @@
 ###################################################### General ######################################################
-internal_domain: ''
-external_domain: 'huntapples.com'
+internal_domain: 'hac.local'
+external_domain: ''
 timezone: 'Etc/UTC'
