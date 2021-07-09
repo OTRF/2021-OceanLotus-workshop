@@ -58,7 +58,7 @@ resource "aws_security_group" "red_team_server_alpha_sg" {
     from_port = 8
     to_port = 0
     protocol = "icmp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["${aws_instance.jump_box.private_ip}/32"]
   }
 
   # Allow SSH from jumpbox
@@ -69,12 +69,12 @@ resource "aws_security_group" "red_team_server_alpha_sg" {
     cidr_blocks = ["${aws_instance.jump_box.private_ip}/32"]
   }
 
-  # Allow all traffic form jumpbox
+  # Allow all traffic form jumpbox and CORP NAT gateway
 	ingress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["${aws_instance.jump_box.private_ip}/32"]
+    cidr_blocks = ["${aws_instance.jump_box.private_ip}/32", "${aws_eip.nat_gw_eip.public_ip}/32"]
   }
  
   # Allow all egress outbound
@@ -113,6 +113,9 @@ resource "aws_instance" "red_team_server_alpha" {
 resource "aws_eip" "red_team_box_alpha_eip" {
 	instance = aws_instance.red_team_server_alpha.id
   vpc = true
+  tags = {
+    Name = "${var.VPC_NAME}_red_team_box_alpha_eip"
+  }
 }
 
 ########################################### Create red team box - beta ############################################
@@ -125,7 +128,7 @@ resource "aws_security_group" "red_team_server_beta_sg" {
     from_port = 8
     to_port = 0
     protocol = "icmp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["${aws_instance.jump_box.private_ip}/32"]
   }
 
   # Allow SSH from jumpbox
@@ -136,12 +139,12 @@ resource "aws_security_group" "red_team_server_beta_sg" {
     cidr_blocks = ["${aws_instance.jump_box.private_ip}/32"]
   }
 
-   # Allow all traffic form jumpbox
+  # Allow all traffic form jumpbox and CORP NAT gateway
 	ingress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["${aws_instance.jump_box.private_ip}/32"]
+    cidr_blocks = ["${aws_instance.jump_box.private_ip}/32", "${aws_eip.nat_gw_eip.public_ip}/32"]
   }
  
   # Allow all egress outbound
@@ -180,4 +183,7 @@ resource "aws_instance" "red_team_server_beta" {
 resource "aws_eip" "red_team_box_beta_eip" {
 	instance = aws_instance.red_team_server_beta.id
   vpc = true
+  tags = {
+    Name = "${var.VPC_NAME}_red_team_box_beta_eip"
+  }
 }

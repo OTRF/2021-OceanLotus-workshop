@@ -112,6 +112,10 @@ resource "aws_security_group" "nsm_box_traffic_mirror_sg" {
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
+
+  tags = {
+    Name = "${var.VPC_NAME}_NSM_BOX_TRAFFIC_MIRROR_SG"
+  }
 }
 
 resource "aws_network_interface" "nsm_tap_interface" {
@@ -186,7 +190,7 @@ resource "aws_ec2_traffic_mirror_filter_rule" "nsm_traffic_mirror_ipv6_filter_ru
   traffic_direction        = "egress"
 }
 
-
+########################################### Create network traffic mirror sessions ###########################################
 resource "aws_ec2_traffic_mirror_session" "wiki_server_traffic_mirror_session" {
   description              = "${var.VPC_NAME}_wiki_server_traffic_mirror_session"
   network_interface_id     = "${aws_instance.wiki_server.primary_network_interface_id}"
@@ -206,6 +210,39 @@ resource "aws_ec2_traffic_mirror_session" "win_file_server_traffic_mirror_sessio
   session_number           = 1 
   tags = {
   	Name = "${var.VPC_NAME}_win_file_server_traffic_mirror_session"
+ 	}
+}
+
+resource "aws_ec2_traffic_mirror_session" "macos_alpha_traffic_mirror_session" {
+  description              = "${var.VPC_NAME}_macos_alpha_traffic_mirror_session"
+  network_interface_id     = "${aws_instance.mac_instance_alpha.primary_network_interface_id}"
+  traffic_mirror_filter_id = aws_ec2_traffic_mirror_filter.nsm_traffic_mirror_filter.id
+  traffic_mirror_target_id = aws_ec2_traffic_mirror_target.nsm_traffic_mirror_target.id
+  session_number           = 1 
+  tags = {
+  	Name = "${var.VPC_NAME}_macos_alpha_traffic_mirror_session"
+ 	}
+}
+
+resource "aws_ec2_traffic_mirror_session" "macos_beta_traffic_mirror_session" {
+  description              = "${var.VPC_NAME}_macos_beta_traffic_mirror_session"
+  network_interface_id     = "${aws_instance.mac_instance_beta.primary_network_interface_id}"
+  traffic_mirror_filter_id = aws_ec2_traffic_mirror_filter.nsm_traffic_mirror_filter.id
+  traffic_mirror_target_id = aws_ec2_traffic_mirror_target.nsm_traffic_mirror_target.id
+  session_number           = 1 
+  tags = {
+  	Name = "${var.VPC_NAME}_macos_beta_traffic_mirror_session"
+ 	}
+}
+
+resource "aws_ec2_traffic_mirror_session" "macos_charlie_traffic_mirror_session" {
+  description              = "${var.VPC_NAME}_macos_charlie_traffic_mirror_session"
+  network_interface_id     = "${aws_instance.mac_instance_charlie.primary_network_interface_id}"
+  traffic_mirror_filter_id = aws_ec2_traffic_mirror_filter.nsm_traffic_mirror_filter.id
+  traffic_mirror_target_id = aws_ec2_traffic_mirror_target.nsm_traffic_mirror_target.id
+  session_number           = 1 
+  tags = {
+  	Name = "${var.VPC_NAME}_macos_charlie_traffic_mirror_session"
  	}
 }
 

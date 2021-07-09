@@ -4,7 +4,7 @@ For the lastest installation instructions for this repo please see this blog pos
 ## Init Ansible playbook
 1. `vim macos-workshop/ChooseYourSIEMAdventure/hosts.ini` and add the Graylog server IP address under `[splunk]`
 1. `vim macos-workshop/ChooseYourSIEMAdventure/group_vars/all.yml` and set:
-    1. `base_domain` – Set the domain where the server resides
+    1. `base_domain` – `<external_domain - group_vars/all.yml>`
     1. `timezone` – OPTIONAL – The default timezone is UTC+0
     1. `siem_username` – Ignore this setting
     1. `siem_password` – Set the Splunk admin password

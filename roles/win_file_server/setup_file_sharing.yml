@@ -9,13 +9,24 @@
     - 'public'
     - 'private'
 
+# https://docs.microsoft.com/en-us/troubleshoot/windows-server/networking/guest-access-in-smb2-is-disabled-by-default
+- name: Enable Guest remote share login
+  ansible.windows.win_regedit:
+    path: "HKLM:\\SYSTEM\\CurrentControlSet\\Services\\LanmanWorkstation\\Parameters"
+    name: AllowInsecureGuestAuth
+    data: 1
+    type: dword
+
+- name: Enable Guest user account
+  win_shell: 'net user guest /active:yes'
+
 - name: Add public company share
   ansible.windows.win_share:
     name: public
     description: Files for company employees
     path: C:\shares\public
     list: yes
-    full: Users,Administrators
+    full: Everyone,Users,Administrators
 
 ##################################################
 # Create private share
@@ -27,3 +38,13 @@
     path: C:\shares\private
     list: no
     full: Administrators
+
+##################################################
+# Create private share
+##################################################
+- name: Copy files to private Windows share
+  ansible.windows.win_copy:
+    src: "{{ item }}"
+    dest: C:\shares\private
+  with_fileglob:
+    - "files/exfil_files/*.pdf"

@@ -194,3 +194,89 @@ resource "aws_instance" "windows_file_server" {
  	}
 }
  
+############################################ macos - alpha ############################################
+resource "aws_security_group" "macos_sg" {
+  vpc_id = aws_vpc.vpc.id
+
+  # Allow jumbox and CORP network
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["${aws_instance.jump_box.private_ip}/32", var.corpCIDRblock]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.VPC_NAME}_MACOS_SG"
+  }
+}
+
+resource "aws_instance" "mac_instance_alpha" {
+  ami           					= var.macos-ami
+  instance_type 					= "mac1.metal"
+  host_id                 = "${var.macos_dedicated_hosts["alpha"]}"
+  subnet_id 							= aws_subnet.corp_subnet.id
+  vpc_security_group_ids 	= [aws_security_group.macos_sg.id]
+  key_name 								= "${var.VPC_NAME}-ssh-key"
+  private_ip	            = "${var.corp_servers_map["macos_alpha"]}"
+  disable_api_termination = true
+
+  root_block_device {
+		volume_size	= 100
+		volume_type = "gp2"
+		delete_on_termination = true
+	}
+
+ 	tags = {
+  	Name = "${var.VPC_NAME}_MACOS_ALPHA"
+ 	}
+}
+
+resource "aws_instance" "mac_instance_beta" {
+  ami           					= var.macos-ami
+  instance_type 					= "mac1.metal"
+  host_id                 = "${var.macos_dedicated_hosts["beta"]}"
+  subnet_id 							= aws_subnet.corp_subnet.id
+  vpc_security_group_ids 	= [aws_security_group.macos_sg.id]
+  key_name 								= "${var.VPC_NAME}-ssh-key"
+  private_ip	            = "${var.corp_servers_map["macos_beta"]}"
+  disable_api_termination = true
+
+  root_block_device {
+		volume_size	= 100
+		volume_type = "gp2"
+		delete_on_termination = true
+	}
+
+ 	tags = {
+  	Name = "${var.VPC_NAME}_MACOS_BETA"
+ 	}
+}
+
+resource "aws_instance" "mac_instance_charlie" {
+  ami           					= var.macos-ami
+  instance_type 					= "mac1.metal"
+  host_id                 = "${var.macos_dedicated_hosts["charlie"]}"
+  subnet_id 							= aws_subnet.corp_subnet.id
+  vpc_security_group_ids 	= [aws_security_group.macos_sg.id]
+  key_name 								= "${var.VPC_NAME}-ssh-key"
+  private_ip	            = "${var.corp_servers_map["macos_charlie"]}"
+  disable_api_termination = true
+
+  root_block_device {
+		volume_size	= 100
+		volume_type = "gp2"
+		delete_on_termination = true
+	}
+
+ 	tags = {
+  	Name = "${var.VPC_NAME}_MACOS_CHARLIE"
+ 	}
+}

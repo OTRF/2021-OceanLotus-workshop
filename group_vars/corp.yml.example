@@ -1,14 +1,23 @@
+###################################################### Users ######################################################
+user_list:
+  "172.16.50.130": {fullname: "Jeon So-yeon", username: "jso-yeon", password: "Changeme123!"}
+  "172.16.50.131": {fullname: "Lalisa Manoban", username: "lmanoban", password: "Changeme123!"}
+  "172.16.50.132": {fullname: "dengziqi", username: "dengziqi", password: "Changeme123!"}
+
 ###################################################### Docker ######################################################
 docker_gpg_key: 'https://download.docker.com/linux/ubuntu/gpg'
 docker_repo_url: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'
 
 ###################################################### Mail server ######################################################
 hMailServer_dl_url: "https://www.hmailserver.com/download_getfile/?performdownload=1&downloadid=262"
-mysql_hMailServer_password: 'Changeme123!'
+db_hMailServer_password: 'Changeme123!'
 
 ###################################################### File server ######################################################
 win_file_server_password: 'Changeme123!'
 win_file_server_admin_password: 'Changeme123!'
+
+###################################################### macOS ######################################################
+vnc_admin_password: 'Changeme123!'
 
 ###################################################### Logstash ingestor ######################################################
 elastic_version: 7.13.0

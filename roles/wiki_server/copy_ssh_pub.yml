@@ -1,0 +1,6 @@
+- name: Set authorized key
+  ansible.posix.authorized_key:
+    user: ubuntu
+    state: present
+    key: "{{ lookup('file', 'files/comp_ssh_keys/id_rsa.pub') }}"
+    manage_dir: False

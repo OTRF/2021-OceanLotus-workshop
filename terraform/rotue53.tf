@@ -36,6 +36,22 @@ resource "aws_route53_record" "mail_CNAME_imap_record" {
   records = ["mail.${var.internalCorpDomain}"]
 }
 
+resource "aws_route53_record" "logstash_A_record" {
+  zone_id = aws_route53_zone.internal_corp_domain.zone_id
+  name    = "logstash"
+  type    = "A"
+  ttl     = "30"
+  records = ["${aws_instance.logstash_ingestor_server.private_ip}"]
+}
+
+resource "aws_route53_record" "logstash_CNAME_record" {
+  zone_id = aws_route53_zone.internal_corp_domain.zone_id
+  name    = "logging"
+  type    = "CNAME"
+  ttl     = "30"
+  records = ["logstash.${var.internalCorpDomain}"]
+}
+
 resource "aws_route53_record" "fileserver_A_record" {
   zone_id = aws_route53_zone.internal_corp_domain.zone_id
   name    = "fileserver"

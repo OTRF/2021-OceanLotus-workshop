@@ -65,10 +65,27 @@ You might be curious why you need to generate SSH keys rather than using a pre-e
     1. AWS Services > Compute > EC2 > Images > AMIs
     1. Search for `Ubuntu 20.04`
     1. Copy the AMI ID
+  1. `windows-ami` - Set this to the AMI UID 
+    1. AWS Services > Compute > EC2 > Images > AMIs
+    1. Search for `windows 2019`
+    1. Copy the AMI ID
+  1. `macos-ami` - Set this to the AMI UID 
+    1. AWS Services > Compute > EC2 > Images > AMIs
+    1. Search for `macOS catalina`
+    1. Copy the AMI ID
   1. Repeat the same steps for the Ubuntu AMI for the Windows server AMI
   1. `siem_servers_map` - This maps SIEM names to IP addresses for the local subnet. It's best to leave this set as default.
   1. `management_subnet_map` - Same as the map above
   1. `corp_servers_map` - Same as the maps above
+
+## Creating dedicated hosts
+1. `aws ec2 allocate-hosts --instance-type mac1.metal --availability-zone <availabilityZone - terraform/variables.tf> --auto-placement on --quantity 3 --region <availabilityZone - terraform/variables.tf - leave AZ off>`
+    1. ![aws_allocate_dedicated_host](../.img/aws_allocate_dedicated_host.png)
+    1. ![aws_allocated_host_id](../.img/aws_allocated_host_id.png)
+    1. Copy the host ID and press `q`
+1. `vim terraform/variables.tf` scroll down to `macos_dedicated_hosts` section
+    1. Enter the host ID for one openings
+    1. ![terraform_macos_dedicated_hosts](../.img/terraform_macos_dedicated_hosts.png)
 
 ## Spin up Terraform environment
 1. `terraform init`

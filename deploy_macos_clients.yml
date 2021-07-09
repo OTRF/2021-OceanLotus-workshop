@@ -3,6 +3,11 @@
   become_user: root
   tasks:
     - include_vars: 'group_vars/sec_tools.yml'
-    #- import_tasks: 'roles/macos_clients/setup_debugging_tools.yml'
+    - include_vars: 'group_vars/corp.yml'
+    - import_tasks: 'roles/macos_clients/setup_debugging_tools.yml'
+    - import_tasks: 'roles/macos_clients/setup_vnc_server.yml'
     - import_tasks: 'roles/macos_clients/setup_osquery.yml'
     - import_tasks: 'roles/macos_clients/setup_filebeat.yml'
+    - import_tasks: 'roles/macos_clients/setup_create_users.yml'
+    - import_tasks: 'roles/macos_clients/copy_ssh_key.yml'
+      when: user_list[ansible_facts.default_ipv4.address].username == "lmanoban"
