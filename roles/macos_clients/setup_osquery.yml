@@ -47,6 +47,7 @@
   get_url:
     url: "{{ osquery_dl_url }}"
     dest: /tmp/osquery-{{ osquery_version }}.pkg
+    validate_certs: no
   when: osquery_bin.stat.exists == False
 
 - name: Install Osquery
@@ -113,7 +114,7 @@
     path: /var/log/osquery/osqueryd.INFO
     search_regex: 'Running on machine'
 
-- name: Osquery process_events thealthcheck
+- name: Osquery process_events healthcheck
   wait_for:
     path: /var/log/osquery/osqueryd.results.log
     search_regex: '{"name":"process_events"'
@@ -122,7 +123,18 @@
   uri:
     url: http://www.google.com
 
-- name: Osquery socket_events thealthcheck
+- name: Osquery socket_events healthcheck
   wait_for:
     path: /var/log/osquery/osqueryd.results.log
     search_regex: '{"name":"socket_events"'
+
+- name: Create test file
+  ansible.builtin.file:
+    path: /tmp/hello.txt
+    state: touch
+    mode: u=rw,g=r,o=r
+
+- name: Osquery file_events healthcheck
+  wait_for:
+    path: /var/log/osquery/osqueryd.results.log
+    search_regex: '{"name":"file_events"'

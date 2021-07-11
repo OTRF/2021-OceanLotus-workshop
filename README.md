@@ -4,6 +4,7 @@
 * [Network diagram](#network-diagram)  
 * [AWS resource limit increase requests](#AWS-resource-limit-increase-requests)
 * [AWS pricing](#aws-pricing)
+
 * [AWS inital setup](#AWS-inital-setup)
   * [Create an AWS account](##Create-an-AWS)
   * [Select a region](##Select-a-region)
@@ -99,11 +100,6 @@ Let's discuss the hour pricing listed in the table below. It should be noted tha
 1. [Setup corp subnet](docs/setup_corp_subnet.md)
 1. [Setup macOS clients](docs/setup_macos_clients.md)
 
-## Setup VPC mirror sessions
-<TODO>
-<TODO>
-<TODO>
-
 # Install/Setup public subnet
 The playbook instructions for these instances assume they are publicaly facing and that these instances have public DNS A records that can be used by Let's Encrypt to generate an HTTPS certificate for NGINX.
 
@@ -114,10 +110,19 @@ The playbook instructions for these instances assume they are publicaly facing a
 * [Splunk](docs/setup_splunk.md)
 * [Logstash ingestor](docs/setup_logstash_ingestor.md)
 
+# Install/Setup corp subnet
+The playbook instructions for these instances are to setup
+
 # Destroy the AWS environment
 1. `cd macos-workshop/terraform`
 1. `terraform destroy`
   1. ![Terraform destroy](.img/terraform_destroy.png)
+
+## JSON logs
+* []()
+* []()
+* []()
+* []()
 
 # References
 ## Ansible
@@ -166,7 +171,7 @@ The playbook instructions for these instances assume they are publicaly facing a
 * [CptOfEvilMinions/ChooseYourSIEMAdventure - docker-compose-swarm-elastic.yml](https://github.com/CptOfEvilMinions/ChooseYourSIEMAdventure/blob/main/docker-compose-swarm-elastic.yml)
 * [DockerHub - Atlassian Confluence](https://hub.docker.com/r/atlassian/confluence-server/)
 * [Docker-compose file for the official Atlassian Confluence Server](https://gist.github.com/sebastian13/808c6363933943ad892f433db9d6dba7)
-* []()
+* [Setting hostname with Ansible](https://www.derpturkey.com/setting-host-with-ansible-in-ubuntu/)
 * []()
 * []()
 * []()

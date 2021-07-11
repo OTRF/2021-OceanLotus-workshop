@@ -113,6 +113,11 @@ For the lastest installation instructions for this repo please see this blog pos
 ## DEBUGGING Logstash
 * `tail -f /var/log/logstash/logstash-plain`
 
+## Clearing index data
+1. SSH into Splunk
+1. `/opt/splunk/bin/splunk stop`
+1. `/opt/splunk/bin/splunk clean eventdata -index <index name>`
+
 ## References
 * [How to Set up Splunk HEC the Smart Way](https://hurricanelabs.com/splunk-tutorials/how-to-set-up-splunk-hec-the-smart-way/)
 * [What is the reseasoning behind the Sysmon sourcetype?](https://community.splunk.com/t5/Archive/What-is-the-reseasoning-behind-the-Sysmon-sourcetype/m-p/427987)
@@ -120,7 +125,7 @@ For the lastest installation instructions for this repo please see this blog pos
 * [Using the AUTH LOGIN sessionkey with Curl SplunkAPI](https://community.splunk.com/t5/Archive/Using-the-AUTH-LOGIN-sessionkey-with-Curl-SplunkAPI/m-p/47628)
 * [Using Ansible uri module to add users to splunk via REST API](https://community.splunk.com/t5/Getting-Data-In/Using-Ansible-uri-module-to-add-users-to-splunk-via-REST-API/m-p/343351)
 * [Splunk REST API Reference Manual](https://docs.splunk.com/Documentation/Splunk/8.2.1/RESTREF/RESTintrospect)
-* []()
+* [Remove indexes and indexed data](https://docs.splunk.com/Documentation/Splunk/8.2.1/Indexer/RemovedatafromSplunk)
 * []()
 * []()
 * []()

@@ -49,6 +49,12 @@ TO test this deployment on a local VM and ingest logs into the SIEMS you `NEED` 
     1. ![filebeat_test_output](../.img/filebeat_test_output.png)
 1. `kafkacat -C -b 172.16.50.10:9092 -t osquery -C`
 
+## Password reset
+1. SSH into machine as `ec2-user`
+1. `sudo su`
+1. `sudo /usr/bin/dscl . -passwd /Users/<username> <password>`
+1. `sudo rm -r /Users/<username>/Library/Keychains/*`
+
 ## References
 ### Filebeat
 * [Avoid Ansible command warning](https://ansibledaily.com/avoid-ansible-command-warnings/)
@@ -78,7 +84,7 @@ TO test this deployment on a local VM and ingest logs into the SIEMS you `NEED` 
 * [osquery-configuration/Classic/Endpoints/MacOS/osquery_no_tls.flags](https://github.com/palantir/osquery-configuration/blob/master/Classic/Endpoints/MacOS/osquery_no_tls.flags)
 * [Installing on macOS](https://osquery.readthedocs.io/en/stable/installation/install-macos/)
 * [Deploying Osquery Part 2 - The basics, cont.](https://blog.securelyinsecure.com/post/deploying-osquery-pt2/)
-* []()
+* [osquery-configuration/Classic/Servers/Linux/osquery.flags](https://github.com/palantir/osquery-configuration/blob/master/Classic/Servers/Linux/osquery.flags)
 * []()
 * []()
 

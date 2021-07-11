@@ -81,13 +81,22 @@ resource "aws_security_group" "wiki_server_sg" {
     cidr_blocks = ["${aws_instance.jump_box.private_ip}/32", var.corpCIDRblock]
   }
 
-  # Allow SSH from jumpbox
+  # Allow SSH from jumpbox and red team box alpha
   ingress {
     description = "Allow SSH from jumpbox"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["${aws_instance.jump_box.private_ip}/32"]
+    cidr_blocks = ["${aws_instance.jump_box.private_ip}/32", "${aws_instance.red_team_server_alpha.private_ip}/32"]
+  }
+
+  # Allow ALL traffic from corp net
+  ingress {
+    description = "Allow ALL traffic from corp net"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [var.corpCIDRblock]
   }
 
   # Allow NGINX via HTTP
@@ -120,7 +129,7 @@ resource "aws_security_group" "wiki_server_sg" {
 
 resource "aws_instance" "wiki_server" {
   ami           					= var.ubunut-ami
-  instance_type 					= "t3.medium"
+  instance_type 					= "t3.small"
   subnet_id 							= aws_subnet.corp_subnet.id
   vpc_security_group_ids 	= [aws_security_group.wiki_server_sg.id]
   key_name 								= "${var.VPC_NAME}-ssh-key"
@@ -261,7 +270,7 @@ resource "aws_instance" "mac_instance_beta" {
 }
 
 resource "aws_instance" "mac_instance_charlie" {
-  ami           					= var.macos-ami
+  ami           					= var.macos-mojave-ami
   instance_type 					= "mac1.metal"
   host_id                 = "${var.macos_dedicated_hosts["charlie"]}"
   subnet_id 							= aws_subnet.corp_subnet.id

@@ -22,6 +22,7 @@
   get_url:
     url: "{{ filebeat_dl_url }}"
     dest: /tmp/filebeat-{{ filebeat_version }}-darwin-x86_64.tar.gz
+    validate_certs: no
   when: filebeat_bin.stat.exists == False
 
 - name: UNtart Filebeat

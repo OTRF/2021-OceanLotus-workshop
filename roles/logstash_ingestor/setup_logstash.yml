@@ -91,6 +91,14 @@
     group: logstash
     mode: 0400
 
+- name: Copy file output config
+  template:
+    src: "conf/logstash_ingestor/logstash/32-file-output.conf"
+    dest: "/etc/logstash/conf.d/32-file-output.conf"
+    owner: logstash
+    group: logstash
+    mode: 0400
+
 ####################################################################
 # Restart service
 ####################################################################

@@ -37,6 +37,14 @@
 1. `cd ChooseYourSIEMAdventure`
 1. `vim ChooseYourSIEMAdventure/conf/tls/tls.conf`
 
+## Clearing index data
+1. `systemctl stop molochviewer`
+1. `systemctl stop molochcapture`
+1. `/data/moloch/db/db.pl http://127.0.0.1:9200 wipe`
+  1. Type `WIPE`
+1. `systemctl start molochviewer`
+1. `systemctl start molochcapture`
+
 ## References
 * [Redirect HTTP to HTTPS in Nginx](https://serversforhackers.com/c/redirect-http-to-https-nginx)
 * [Arkmie - How do I proxy Arkime using Apache](https://arkime.com/faq)

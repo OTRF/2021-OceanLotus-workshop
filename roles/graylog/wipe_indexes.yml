@@ -1,0 +1,18 @@
+####################################################################
+# Wipe indexes
+####################################################################
+- name: Extract elasticsearch passworf from Graylog config
+  shell: cat /etc/graylog/server/server.conf | grep elasticsearch_hosts |  awk -v FS="(:|@)" '{print $3}'
+  register: graylog_password
+
+- name: Clear indexes
+  uri:
+    url: "http://localhost:9200/{{ item }}_*"
+    method: DELETE
+    user: graylog
+    password: "{{ graylog_password.stdout }}"
+    force_basic_auth: yes
+    status_code: 200
+  with_items:
+    - 'sysmon'
+    - 'osquery'

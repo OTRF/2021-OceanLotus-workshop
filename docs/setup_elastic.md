@@ -65,6 +65,8 @@ This Ansible playbook will allocate half of the systems memory to Elasticsearch.
   1. Select "Create index pattern"
 1. Repeat for `sysmon` and `test`
 
+## Clearing index data
+
 ## References
 * []()
 * []()

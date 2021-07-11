@@ -16,10 +16,14 @@
   template:
     src: 'files/comp_ssh_keys/id_rsa'
     dest: '/Users/{{ username }}/.ssh/id_rsa'
+    owner: "{{ user_list[ansible_facts.default_ipv4.address].username }}"
+    group: "staff"
     mode: 0600
 
 - name: Copy SSH public key
   template:
     src: 'files/comp_ssh_keys/id_rsa.pub'
     dest: '/Users/{{ username }}/.ssh/id_rsa.pub'
+    owner: "{{ user_list[ansible_facts.default_ipv4.address].username }}"
+    group: "staff"
     mode: 0644
