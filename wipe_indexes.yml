@@ -1,0 +1,27 @@
+- hosts: ['arkmie','graylog','elastic', 'splunk', 'macos_clients']
+  become: yes
+  become_user: root
+  vars_prompt:
+    - name: elastic_password
+      prompt: What is your Elastic password?
+
+  tasks:
+    ################################### Clean up mac machines ###################################
+    #- import_tasks: 'roles/macos_clients/clean_up.yml'
+    # when: ansible_default_ipv4.address in groups.macos_clients
+
+    ################################### Wipe Elastic indexes ###################################
+    - import_tasks: 'roles/elastic/wipe_indexes.yml'
+      when: ansible_default_ipv4.address == groups.elastic[0]
+
+    ################################### Wipe Arkmie indexes ###################################
+    - import_tasks: 'roles/arkmie/wipe_indexes.yml'
+      when: ansible_default_ipv4.address == groups.arkmie[0]
+
+    ################################### Wipe Splunk indexes ###################################
+    - import_tasks: 'roles/splunk/wipe_indexes.yml'
+      when: ansible_default_ipv4.address == groups.splunk[0]
+
+    ################################### Wipe Graylog indexes ###################################
+    - import_tasks: 'roles/graylog/wipe_indexes.yml'
+      when: ansible_default_ipv4.address == groups.graylog[0]

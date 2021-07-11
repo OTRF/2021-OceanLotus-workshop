@@ -1,0 +1,50 @@
+#################################################################
+# Copy SSH key for user
+#################################################################
+- name: Set username
+  set_fact:
+    username: "{{ user_list[ansible_facts.default_ipv4.address].username }}"
+
+- name: Kill running processes
+  shell: "pkill -9 {{ item }}"
+  with_items: 
+    - ""
+    - ""
+    - ""
+
+- name: Clear BASH history
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - '/var/root/.sh_history'
+    - '/Users/ec2-user/.bash_history'
+    - '/Users/{{ username }}/.bash_history'
+
+- name: Clean up ec2-user's HOME directory
+  #shell: "rm -rf /User/ec2-user/{{ item }}/*"
+  ansible.builtin.file:
+    path: /User/ec2-user/{{ item }}/*
+    state: absent
+  with_items:
+    - "Downloads"
+    - "Desktop"
+    - "Documents"
+
+- name: Clean up {{ username }} HOME directory
+  #shell: "rm -rf /User/{{ username }}/{{ item }}/*"
+  ansible.builtin.file:
+    path: /User/{{ username }}/{{ item }}/*
+    state: absent
+  with_items:
+    - "Downloads"
+    - "Desktop"
+    - "Documents"
+
+- name: Clean up malware
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "/tmp/hgl"
+

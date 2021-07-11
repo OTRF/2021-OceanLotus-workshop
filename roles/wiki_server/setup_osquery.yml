@@ -1,0 +1,104 @@
+####################################################################
+# Install/Setup Osquery
+####################################################################
+- name: Install AuditD
+  apt:
+    name: ['auditd']
+    state: latest
+  
+- name: Disable AuditD service
+  service:
+    name: 'auditd'
+    enabled: no
+    state: stopped
+
+####################################################################
+# Install/Setup Osquery
+####################################################################
+- name: add myself to /etc/hosts
+  lineinfile:
+    dest: /etc/hosts
+    regexp: '^127\.0\.0\.1[ \t]+localhost'
+    line: '127.0.0.1 localhost wiki.{{ internal_domain }}'
+    state: present
+
+- name: change hostname to wiki.{{ internal_domain }}
+  hostname:
+    name: "wiki.{{ internal_domain }}"
+
+- name: Stat Osquery binary
+  stat:
+    path: '/usr/bin/osqueryd'
+  register: osquery_bin
+
+- name: Add Osquery GPG key
+  apt_key:
+    keyserver: "keyserver.ubuntu.com"
+    id: "1484120AC4E9F8A1A577AEEE97A80C63C9D8B80B"
+    state: present
+  when: osquery_bin.stat.exists == False
+
+- name: Add Osquery repo
+  ansible.builtin.apt_repository:
+    repo: deb [arch=amd64] https://pkg.osquery.io/deb deb main
+    state: present
+  when: osquery_bin.stat.exists == False
+
+- name: Install Osquery
+  apt:
+    name: ['osquery={{ osquery_version }}-1.linux']
+    state: present
+  when: osquery_bin.stat.exists == False
+
+- name: Copy Osquery flags file
+  template:
+    src: 'conf/wiki_server/osquery/osquery.flags'
+    dest: '/etc/osquery/osquery.flags'
+    owner: 'root'
+    group: 'root'
+    mode: 0600
+  register: osquery_flags
+
+- name: Copy Osquery config file
+  template:
+    src: 'conf/wiki_server/osquery/osquery.conf'
+    dest: '/etc/osquery/osquery.conf'
+    owner: 'root'
+    group: 'root'
+    mode: 0600
+  register: osquery_conf
+
+- name: Start Osquery
+  service:
+    name: 'osqueryd'
+    enabled: yes
+    state: restarted
+  when: 
+   - osquery_conf.changed or osquery_flags.changed
+
+- name: Osquery healthcheck
+  wait_for:
+    path: /var/log/osquery/osqueryd.INFO
+    search_regex: 'Running on machine'
+  when: 
+    - osquery_conf.changed or osquery_flags.changed
+
+- name: Osquery process_events healthcheck
+  wait_for:
+    path: /var/log/osquery/osqueryd.results.log
+    search_regex: '{"name":"process_events"'
+  when: 
+    - osquery_conf.changed or osquery_flags.changed
+
+- name: CULR google
+  uri:
+    url: http://www.google.com
+  when: 
+    - osquery_conf.changed or osquery_flags.changed
+
+- name: Osquery socket_events healthcheck
+  wait_for:
+    path: /var/log/osquery/osqueryd.results.log
+    search_regex: '{"name":"socket_events"'
+  when: 
+    - osquery_conf.changed or osquery_flags.changed

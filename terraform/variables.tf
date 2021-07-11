@@ -39,6 +39,11 @@ variable "macos-ami" {
   default = "ami-0dcfefad26e3bde40"
 }
 
+variable "macos-mojave-ami" {
+  # macOS Mojave 10.14.6
+  default = "ami-0924cd7ae910285e4"
+}
+
 variable "windows-ami" {
   # Windows Sever 2019
   default = "ami-086850e3dda52e84a"

@@ -1,0 +1,29 @@
+####################################################################
+# Wipe indexes
+####################################################################
+- name: Stop Splunk
+  shell: '/opt/splunk/bin/splunk stop'
+
+- name: Clear indexes
+  ansible.builtin.expect:
+    command: '/opt/splunk/bin/splunk clean eventdata -index {{ item }}'
+    responses:
+        "(.*)Are you sure you want to continue": "y"
+  with_items:
+    - 'sysmon'
+    - 'osquery'
+
+- name: Start Splunk
+  shell: '/opt/splunk/bin/splunk start'
+
+- name: Splunk healthcheck
+  uri:
+    url: "http://127.0.0.1:8000/en-US/"
+    follow_redirects: safe
+    method: GET
+    remote_src: yes
+    status_code: 200
+  register: _result
+  until: _result.status == 200
+  retries: 720 # 720 * 5 seconds = 1hour (60*60/5)
+  delay: 5 # Every 5 seconds

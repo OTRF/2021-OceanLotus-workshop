@@ -1,6 +1,10 @@
 #################################################################
 # Install/Setup homebrew
 #################################################################
+- name: Set username
+  set_fact:
+    username: "{{ user_list[ansible_facts.default_ipv4.address].username }}"
+
 - name: Stat brew binary
   stat:
     path: '/usr/local/bin/brew'
@@ -24,4 +28,5 @@
     - 'homebrew/cask/firefox'
     - 'homebrew/cask/iterm2'
     - 'wireshark'
-  failed_when: '"brew reinstall" is not in msg'
+    - 'thunderbird'
+  #failed_when: '"brew reinstall" is not in msg'

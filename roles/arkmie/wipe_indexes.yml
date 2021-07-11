@@ -1,0 +1,24 @@
+####################################################################
+# Wipe indexes
+####################################################################
+- name: Stop Moloch
+  service:
+    name: "{{ item }}"
+    state: stopped
+  with_items:
+    - 'molochviewer'
+    - 'molochcapture'
+
+- name: Clear indexes
+  ansible.builtin.expect:
+    command: '/data/moloch/db/db.pl http://127.0.0.1:9200 wipe'
+    responses:
+        "(.*)Type \"WIPE\" to continue": "WIPE"
+
+- name: Stop Moloch
+  service:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - 'molochviewer'
+    - 'molochcapture'

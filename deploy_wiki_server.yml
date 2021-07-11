@@ -9,3 +9,5 @@
     - import_tasks: 'roles/wiki_server/setup_wiki.yml'        # Install/Setup Dokuwiki
     - import_tasks: 'roles/wiki_server/setup_ufw.yml'         # Setup UFW
     - import_tasks: 'roles/wiki_server/copy_ssh_pub.yml'      # Copy SSH pub key
+    - import_tasks: 'roles/wiki_server/setup_osquery.yml'     # Install Osquery
+    - import_tasks: 'roles/wiki_server/setup_filebeat.yml'    # Install filebeat

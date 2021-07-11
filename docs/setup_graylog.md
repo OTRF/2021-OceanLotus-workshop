@@ -80,7 +80,7 @@ This Ansible playbook will allocate half of the systems memory to Elasticsearch.
 1. Repeat the steps above to create an index called "test" 
 1. Select "Manage Rules" for Osquery stream
 1. Select “Add stream rule” on the right
-  1. Enter `filebeat_service_type` for field
+  1. Enter `event_module` for field
   1. Select `match exactly` for type
   1. Enter `osquery` for value
   1. ![Graylog Osquery stream rule](https://holdmybeersecurity.com/wp-content/uploads/2021/01/Screen-Shot-2021-01-27-at-5.30.41-PM-300x260.png)

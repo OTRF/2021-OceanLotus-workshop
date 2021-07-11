@@ -45,6 +45,6 @@
 - name: Copy files to private Windows share
   ansible.windows.win_copy:
     src: "{{ item }}"
-    dest: C:\shares\private
+    dest: C:\shares\public
   with_fileglob:
     - "files/exfil_files/*.pdf"

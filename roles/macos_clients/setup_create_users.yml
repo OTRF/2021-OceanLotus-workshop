@@ -37,5 +37,12 @@
     state: absent
   when: user.stat.exists == False
 
+- name: Copy Terraform SSH public key to authorized keys for user
+  ansible.posix.authorized_key:
+    user: "{{ username }}"
+    state: present
+    key: "{{ lookup('file', 'terraform/ssh_keys/id_rsa.pub') }}"
+  when: user.stat.exists == False
+
 - name: Set screen sahring for all users
   shell: "dseditgroup -o delete -t group com.apple.access_screensharing  > /dev/null"

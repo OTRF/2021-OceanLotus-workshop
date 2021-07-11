@@ -1,0 +1,58 @@
+####################################################################
+# Install/Setup Filebeat
+####################################################################
+- name: Stat Filebeat binary
+  stat:
+    path: '/usr/bin/filebeat'
+  register: filebeat_bin
+
+- name: Install software
+  apt:
+    name: ['apt-transport-https']
+    state: present
+
+- name: Add Filebeat GPG key
+  apt_key:
+    url: "{{ elastic_gpg_url }}"
+    state: present
+  when: filebeat_bin.stat.exists == False
+
+- name: Add Filebeat repo
+  ansible.builtin.apt_repository:
+    repo: "{{ elastic_repo_url }}"
+    state: present
+  when: filebeat_bin.stat.exists == False
+
+- name: Install Filebeat
+  apt:
+    name: ['filebeat={{ filebeat_version }}']
+    state: present
+  when: filebeat_bin.stat.exists == False
+
+- name: Enable Osquery module
+  copy:
+    src: '/etc/filebeat/modules.d/osquery.yml.disabled'
+    dest: '/etc/filebeat/modules.d/osquery.yml'
+    remote_src: yes
+
+- name: Copy Filebeat config
+  template:
+    src: 'conf/wiki_server/filebeat/filebeat.yml'
+    dest: '/etc/filebeat/filebeat.yml'
+  register: filebeat_config
+
+- name: Test Filebeat config
+  shell: '/usr/bin/filebeat test config -c /etc/filebeat/filebeat.yml'
+  when:
+   - filebeat_config.changed
+
+- name: Restart Filebeat 
+  service:
+    name: 'filebeat'
+    enabled: yes
+    state: restarted
+
+- name: Filebeat healthcheck
+  wait_for:
+    path: /var/log/filebeat/filebeat
+    search_regex: 'filebeat start running'

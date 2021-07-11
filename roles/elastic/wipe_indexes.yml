@@ -1,0 +1,14 @@
+####################################################################
+# Wipe indexes
+####################################################################
+- name: Clear indexes
+  uri:
+    url: "http://localhost:9200/{{ item }}-*"
+    method: DELETE
+    user: elastic
+    password: "{{ elastic_password }}"
+    force_basic_auth: yes
+    status_code: 200
+  with_items:
+    - 'sysmon'
+    - 'osquery'

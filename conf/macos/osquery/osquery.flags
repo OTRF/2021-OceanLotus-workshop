@@ -4,8 +4,10 @@
 --watchdog_memory_limit=350
 --disable_audit=false
 --disable_events=false
+--enable_file_events=true
 --audit_allow_config
 --audit_allow_sockets
 --host_identifier=hostname
 --logger_plugin=filesystem
+--read_max=524288000
 --verbose=true
