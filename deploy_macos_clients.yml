@@ -4,10 +4,10 @@
   tasks:
     - include_vars: 'group_vars/sec_tools.yml'          
     - include_vars: 'group_vars/corp.yml'
-    - import_tasks: 'roles/macos_clients/setup_create_users.yml'                  # Create users
-    - import_tasks: 'roles/macos_clients/setup_vnc_server.yml'                    # Setup VNC server
-    - import_tasks: 'roles/macos_clients/setup_debugging_tools.yml'               # Install/Setup tools with Homebrew
-    - import_tasks: 'roles/macos_clients/setup_osquery.yml'                       # Install/Setup Osquery
-    - import_tasks: 'roles/macos_clients/setup_filebeat.yml'                      # Install/Setup Filebeat
-    - import_tasks: 'roles/macos_clients/copy_ssh_key.yml'                        # Copy SSH keys to amchine
-      when: user_list[ansible_facts.default_ipv4.address].username == "lmanoban"  
+    #- import_tasks: 'roles/macos_clients/setup_vnc_server.yml'                    # Setup VNC server
+    #- import_tasks: 'roles/macos_clients/setup_create_users.yml'                  # Create users
+    #- import_tasks: 'roles/macos_clients/setup_debugging_tools.yml'               # Install/Setup tools with Homebrew
+    #- import_tasks: 'roles/macos_clients/setup_osquery.yml'                       # Install/Setup Osquery
+    #- import_tasks: 'roles/macos_clients/setup_filebeat.yml'                      # Install/Setup Filebeat
+    #- import_tasks: 'roles/macos_clients/copy_ssh_key.yml'                        # Copy SSH keys to amchine
+    #  when: user_list[ansible_facts.default_ipv4.address].username == "lmanoban"  

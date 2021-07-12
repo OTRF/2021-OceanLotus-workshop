@@ -33,11 +33,11 @@
         "(.*)Download GEO files(.*)": "yes"                                                               # Download GEO files                      
   when: not moloch_config.stat.exists
 
-- name: Set Arkmie to listen on localhost
-  lineinfile:
-    path: '/data/moloch/etc/config.ini'
-    regexp: '^#viewHost ='
-    line: 'viewHost = localhost'
+- name: Copy Arkmie config.ini
+  template:
+    src: 'conf/arkmie/config.ini'
+    dest: '/data/moloch/etc/config.ini'
+  register: arkmie_conf
 
 ####################################################################
 # Setup Arkmie and Elasticsearch
@@ -82,17 +82,19 @@
 ####################################################################
 # Start Moloch
 ####################################################################
-- name: Start molochcapture
+- name: Restart molochcapture
   service:
     name: 'molochcapture'
     enabled: yes
     state: restarted
+  when: arkmie_conf.changed
     
-- name: Start molochviewer
+- name: Restart molochviewer
   service:
     name: 'molochviewer'
     enabled: yes
     state: restarted
+  when: arkmie_conf.changed
 
 - name: NGINX Let's Encrypt healthcheck
   uri:

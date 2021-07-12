@@ -58,7 +58,7 @@ resource "aws_instance" "logstash_ingestor_server" {
   disable_api_termination = true
 
 	root_block_device {
-		volume_size	= 20
+		volume_size	= 60
 		volume_type = "gp2"
 		delete_on_termination = true
 	}

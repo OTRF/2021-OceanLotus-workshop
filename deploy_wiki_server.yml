@@ -4,10 +4,10 @@
   tasks:
     - include_vars: 'group_vars/sec_tools.yml'
     - include_vars: 'group_vars/corp.yml'
-    - import_tasks: 'roles/init.yml'                          # Init Linux host
-    - import_tasks: 'roles/docker/install_docker.yml'         # Install Docker
-    - import_tasks: 'roles/wiki_server/setup_wiki.yml'        # Install/Setup Dokuwiki
-    - import_tasks: 'roles/wiki_server/setup_ufw.yml'         # Setup UFW
-    - import_tasks: 'roles/wiki_server/copy_ssh_pub.yml'      # Copy SSH pub key
+    #- import_tasks: 'roles/init.yml'                          # Init Linux host
+    #- import_tasks: 'roles/docker/install_docker.yml'         # Install Docker
+    #- import_tasks: 'roles/wiki_server/setup_wiki.yml'        # Install/Setup Dokuwiki
+    #- import_tasks: 'roles/wiki_server/setup_ufw.yml'         # Setup UFW
+    #- import_tasks: 'roles/wiki_server/copy_ssh_pub.yml'      # Copy SSH pub key
     - import_tasks: 'roles/wiki_server/setup_osquery.yml'     # Install Osquery
-    - import_tasks: 'roles/wiki_server/setup_filebeat.yml'    # Install filebeat
+    #- import_tasks: 'roles/wiki_server/setup_filebeat.yml'    # Install filebeat
