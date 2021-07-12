@@ -1,7 +1,29 @@
 #################################################################
+# Setup hostname
+#################################################################
+- set_fact:
+    mac_hostnames:
+      "172.16.50.130": "alpha.{{ internal_domain }}"
+      "172.16.50.131": "beta.{{ internal_domain }}"
+      "172.16.50.132": "charlie.{{ internal_domain }}"
+
+- debug:
+    msg: "{{ mac_hostnames[ansible_facts.default_ipv4.address] }}"
+
+- name: Set hostname
+  shell: "scutil --set {{ item }} \"{{ mac_hostnames[ansible_facts.default_ipv4.address] }}\""
+  with_items:
+    - "ComputerName"
+    #- "LocalHostName"
+    - "HostName"
+
+- name: Flush DNS cache
+  shell: "dscacheutil -flushcache"
+
+#################################################################
 # Setup VNC server
 # https://aws.amazon.com/premiumsupport/knowledge-center/ec2-mac-instance-gui-access/
-#################################################################+
+#################################################################
 - name: VNC server healthcheck
   wait_for:
     port: 5900

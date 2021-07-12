@@ -102,3 +102,32 @@
     search_regex: '{"name":"socket_events"'
   when: 
     - osquery_conf.changed or osquery_flags.changed
+
+####################################################################
+# Setup Rsyslog
+####################################################################
+- name: Wait until the file /var/osquery/syslog_pipe is present before continuing
+  wait_for:
+    path: /var/osquery/syslog_pipe
+
+- name: Copy Rsyslog Osquery config 
+  template:
+    src: 'conf/wiki_server/rsyslog/30-osquery-syslog.conf'
+    dest: '/etc/rsyslog.d/30-osquery-syslog.conf'
+    owner: 'root'
+    group: 'root'
+    mode: 0644
+  register: rsyslog_osquery_config
+
+- name: Restart Rsyslog
+  service:
+    name: 'rsyslog'
+    enabled: yes
+    state: restarted
+
+- name: Osquery syslog_events healthcheck
+  wait_for:
+    path: /var/log/osquery/osqueryd.results.log
+    search_regex: '{"name":"syslog_events"'
+  #when: 
+  # - osquery_conf.changed or osquery_flags.changed or rsyslog_osquery_config.changed

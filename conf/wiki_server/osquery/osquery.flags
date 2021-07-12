@@ -5,6 +5,8 @@
 --disable_audit=false
 --events_expiry=1
 --events_max=50000
+--enable_syslog=true
+--syslog_pipe_path=/var/osquery/syslog_pipe
 --logger_plugin=filesystem
 --disable_events=false
 --watchdog_memory_limit=350

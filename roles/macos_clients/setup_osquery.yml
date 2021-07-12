@@ -2,25 +2,6 @@
 # Setup processes and sockets auditing with OpenBSM
 # https://osquery.readthedocs.io/en/stable/deployment/process-auditing/#auditing-processes-and-sockets-with-openbsm
 #################################################################
-- set_fact:
-    mac_hostnames:
-      "172.16.50.130": "alpha.{{ internal_domain }}"
-      "172.16.50.131": "beta.{{ internal_domain }}"
-      "172.16.50.132": "charlie.{{ internal_domain }}"
-
-- debug:
-    msg: "{{ mac_hostnames[ansible_facts.default_ipv4.address] }}"
-
-- name: Set hostname
-  shell: "scutil --set {{ item }} \"{{ mac_hostnames[ansible_facts.default_ipv4.address] }}\""
-  with_items:
-    - "ComputerName"
-    #- "LocalHostName"
-    - "HostName"
-
-- name: Flush DNS cache
-  shell: "dscacheutil -flushcache"
-
 - name: Copy macOS audit_control config
   template:
     src: 'conf/macos/osquery/audit_control.conf'
