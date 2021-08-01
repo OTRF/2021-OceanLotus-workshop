@@ -31,7 +31,7 @@
 ##################################################
 # Copy files to public share
 ##################################################
-- name: Copy files to private Windows share
+- name: Copy files to public Windows share
   ansible.windows.win_copy:
     src: "{{ item }}"
     dest: C:\shares\public
@@ -55,6 +55,6 @@
 - name: Copy files to private Windows share
   ansible.windows.win_copy:
     src: "{{ item }}"
-    dest: C:\shares\public
+    dest: C:\shares\private
   with_fileglob:
-    - "files/exfil_files/*.pdf"
+    - "files/exfil_files/private/*.pdf"
