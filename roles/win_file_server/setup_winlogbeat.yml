@@ -29,6 +29,7 @@
   win_template:
     src: 'conf/win_file_server/winlogbeat.yml'
     dest: 'C:\Program Files\winlogbeat\winlogbeat.yml'
+  register: winlogbeat_config
 
 - name: Check for Winlogbeat service
   win_service:
@@ -46,3 +47,4 @@
     name: 'winlogbeat'
     start_mode: auto
     state: restarted
+  when: winlogbeat_config.changed or winlogbeat_exe.stat.exists == False

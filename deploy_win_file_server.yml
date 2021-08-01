@@ -7,5 +7,4 @@
     - import_tasks: 'roles/win_file_server/setup_file_sharing.yml'    # Setup file share
     - import_tasks: 'roles/win_file_server/setup_sysmon.yml'          # Install Sysmon
     - import_tasks: 'roles/win_file_server/setup_winlogbeat.yml'      # Install Winlogbeat
-    - import_tasks: 'roles/win_file_server/setup_hmail_server.yml'    # Install hMail server
     - import_tasks: 'roles/win_file_server/setup_win_firewall.yml'    # Setup firewall
