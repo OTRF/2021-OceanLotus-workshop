@@ -12,6 +12,7 @@
   with_items:
     - { username: 'jso-yeon', fullname: "Jeon So-yeon", password: '{{ win_file_server_password }}' }
     - { username: 'lmanoban', fullname: "Lalisa Manoban", password: '{{ win_file_server_password }}' }
+    - { username: 'hton', fullname: "Hoang ton", password: '{{ win_file_server_password }}' }
 
 ##################################################
 # Create admin users
