@@ -52,6 +52,7 @@ winlogbeat.event_logs:
   
   ### Sysmon ###
   - name: Microsoft-Windows-Sysmon/Operational
+    include_xml: true
     processors:
       - script:
           lang: javascript
