@@ -4,10 +4,8 @@
 # https://gitlab.ritsec.cloud/competitions/irsec-2020/ansible/-/blob/master/roles/hmailserver/templates/configure.j2
 # https://gitlab.ritsec.cloud/competitions/irsec-2020/ansible
 ##################################################
-- name: Copy hMail Server Configure Script
-  win_template:
-    src: "conf/win_file_server/hmail_configure.ps1"
-    dest: "{{ ansible_env.TEMP }}\\Setup-hMail.ps1"
+- name: Check if hMail is installed
+  stat:
 
 - name: Install dotnet3.5
   win_chocolatey:
@@ -25,6 +23,11 @@
     state: present
     source: "{{ choco_server_source }}"
   retries: 5
+
+- name: Copy hMail Server Configure Script
+  win_template:
+    src: "conf/win_file_server/hmail_configure.ps1"
+    dest: "{{ ansible_env.TEMP }}\\Setup-hMail.ps1"
 
 - name: Run hMail Installation Script
   win_command: "powershell.exe {{ ansible_env.TEMP }}\\Setup-hMail.ps1"

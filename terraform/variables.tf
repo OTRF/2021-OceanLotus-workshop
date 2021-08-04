@@ -110,8 +110,8 @@ variable "corp_servers_map" {
 variable "macos_dedicated_hosts" {
   type = map
   default = {
-    "alpha" = "h-0e415c6b852501b57"
-    "beta" = "h-0701e0168dfc26ae6"
-    "charlie" = "h-08b1077ed75195124"
+    "alpha" = "h-0a10a5ac0e5ea5cf5"
+    "beta" = "h-0a0089ffea5b9db2c"
+    "charlie" = "h-0ac39554558ce2867"
   }
 }

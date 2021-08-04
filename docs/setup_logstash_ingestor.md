@@ -57,6 +57,11 @@ print (f"[+] - {datetime.now()} - Sucessfully sent random message to {siem.platf
 <TODO>
 <TODO>
 
+## Deleting Kafka topics
+1. SSH into Kafka server
+1. `kafka-topics --zookeeper localhost:2181 --list`
+1. `kafka-topics --zookeeper localhost:2181 --delete --topic <topic name>`
+
 ## Get a list of Kafka topics
 1. `kafkacat -L -b 172.16.50.10:9092`
     1. ![Kafkacat list topics](../.img/kafkacat_list_topics.png)
@@ -66,10 +71,7 @@ print (f"[+] - {datetime.now()} - Sucessfully sent random message to {siem.platf
     1. ![Kafka Sysmon topic](../.img/kafkacat_sysmon_topic.png)
 1. `kafkacat -C -b 172.16.50.10:9092 -t python-logstash`
     <TODO>
-<TODO>
-<TODO>
-<TODO>
-<TODO>
+
 
 ## Debugging
 If your logs aren't making it to Kafka check `/tmp/unknown-topic.log`. This is a debug file to catch all logs that don't get ingested by Kafka.
