@@ -108,14 +108,6 @@ for recipient in recipients:
     server.send_message(msg)
 ```
 
-## Time frame of red team exercise actions
-| # | Time | MITRE technique | Notes |
-| --- | --- | --- | --- |
-| 0 | 07-11-2021 @ 12:30pm CDT| - | Ansible playbook update Osquery | 
-| 1 | 07-11-2021 @ 12:56pm CDT| - | Sent initial email from `not-so-cyber-two.net` about Windows vulnerability | 
-| 2 | 07-11-2021 | TXXX | Initial comp | 
-| 1 | 587641616 | TXXX | Initial comp | 
-| 1 | 587641616 | TXXX | Initial comp | 
 
 ## References
 * [Installing IPython](https://ipython.org/install.html)
@@ -123,17 +115,3 @@ for recipient in recipients:
 * [Sending Emails With Python](https://realpython.com/python-send-email/)
 * []()
 * []()
-* []()
-* []()
-* []()
-* []()
-* []()
-* []()
-* []()
-* []()
-* []()
-* []()
-* []()
-* []()
-* []()
-

@@ -29,6 +29,16 @@
     full: Everyone,Users,Administrators
 
 ##################################################
+# Copy files to public share
+##################################################
+- name: Copy files to public Windows share
+  ansible.windows.win_copy:
+    src: "{{ item }}"
+    dest: C:\shares\public
+  with_fileglob:
+    - "files/exfil_files/public/*.pdf"
+
+##################################################
 # Create private share
 ##################################################
 - name: Add secret share
@@ -40,11 +50,11 @@
     full: Administrators
 
 ##################################################
-# Create private share
+# Copy files to private share
 ##################################################
 - name: Copy files to private Windows share
   ansible.windows.win_copy:
     src: "{{ item }}"
-    dest: C:\shares\public
+    dest: C:\shares\private
   with_fileglob:
-    - "files/exfil_files/*.pdf"
+    - "files/exfil_files/private/*.pdf"

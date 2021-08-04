@@ -1,17 +1,20 @@
 # Install/Setup Arkmie (formley known as Moloch)
 
 ## Init Ansible playbook
-<TODO>
-<TODO>
-<TODO>
-<TODO>
-
+1. `vim macos-workshop/hosts.ini` and add the Arkmie server IP address under `[arkmie]`
+1. `cp group_vars/sec_tools.yml.example group_vars/sec_tools.yml`
+1. `vim group_vars/sec_tools.yml` and set:
+  1. `monitoring_interface` – Set this to the interface that will be used for network monitoring
+  1. `arkmie_version` – Set the version of Arkmie to install
+  1. `arkmie_admin_user` - Username of Arkmie admin
+  1. `arkmie_admin_password` - Password for Arkmie admin
+  1. `arkmie_regular_user` - Username for workshop participant account
+  1. `arkmie_regular_password` - Password for workshop participants
+  1. `elasticsearch_oss_version` - Elasticsearch OSS version to install
+  1. ![Arkmie ansible - group_vars/sec_tools.yml](../.img/ansible_arkmie.png)
 
 ## Run Ansible playbook
 1. `ansible-playbook -i hosts.ini deploy_arkmie.yml -u ubuntu --key-file terraform/ssh_keys/id_rsa`
-    <IMAGE>
-    <IMAGE>
-    <IMAGE>
 
 ## Generate Let's Encrypt certificate
 1. SSH into Elastic EC2 instance
@@ -24,18 +27,6 @@
   1. Enter `2` to redirect HTTP traffic to HTTPS 
 1. Review NGINX config: `/etc/nginx/conf.d/kibana.conf` 
 1. `systemctl restart nginx`
-
-## Create workshop user
-<TODO>
-<TODO>
-<TODO>
-<TODO>
-
-## Generate OpenSSL private key and public cert
-1. `cd macos-workshop`
-1. `git clone https://github.com/CptOfEvilMinions/ChooseYourSIEMAdventure`
-1. `cd ChooseYourSIEMAdventure`
-1. `vim ChooseYourSIEMAdventure/conf/tls/tls.conf`
 
 ## Clearing index data
 1. `systemctl stop molochviewer`

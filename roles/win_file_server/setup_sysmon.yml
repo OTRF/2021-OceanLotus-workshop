@@ -22,6 +22,7 @@
   win_template:
     src: "conf/win_file_server/sysmonconfig-export.xml"
     dest: "{{ ansible_env.TEMP }}\\sysmonconfig-export.xml"
+  register: sysmon_config
 
 - name: Install Sysmon and load config
   win_shell: '.\Sysmon64.exe -accepteula -i .\sysmonconfig-export.xml'
@@ -30,14 +31,14 @@
   when: sysmon_svc.name is not defined
 
 - name: Load new config for Sysmon
-  win_shell: '.\Sysmon64.exe -c .\sysmonconfig-export.xml'
+  win_shell: 'C:\\Windows\\Sysmon64.exe -c .\sysmonconfig-export.xml'
   args:
     chdir: "{{ ansible_env.TEMP }}"
-  when: sysmon_svc.name is defined
+  when: sysmon_config.changed
   
 - name: Restart and enable Sysmon servuce
   win_service:
     name: 'Sysmon64'
     state: restarted
     start_mode: 'auto'
-  when: sysmon_svc.name is not defined
+  when: sysmon_svc.name is not defined or sysmon_config.changed

@@ -1,5 +1,5 @@
 ##########################################################
-# Add firewall rules for file sharing
+# Add firewall rules for hMail server
 ##########################################################
 - name: Firewall rules to allow hMail
   win_firewall_rule:
@@ -18,7 +18,10 @@
     - { name: 'POP3 SSL/TLS', port: 995 }
     - { name: 'IMAP', port: 143 }
     - { name: 'IMAP SSL/TLS', port: 993 }
-    
+
+##########################################################
+# Add firewall rules for file sharing
+########################################################## 
 - name: Firewall rule to allow SMB/File sharing
   win_firewall_rule:
     name: SMB
@@ -32,6 +35,9 @@
     - 445
     - 139
 
+##########################################################
+# Add firewall rules for ICMP
+########################################################## 
 - name: Firewall rule to allow ICMP v4 (ping)
   win_firewall_rule:
     name: ICMP Allow incoming V4 echo request
@@ -41,3 +47,16 @@
     action: allow
     direction: in
     protocol: icmpv4
+
+##########################################################
+# Add firewall rules for ICMP
+########################################################## 
+- name: Firewall rule to allow RDP on TCP port 3389
+  community.windows.win_firewall_rule:
+    name: Remote Desktop
+    localport: 3389
+    action: allow
+    direction: in
+    protocol: tcp
+    state: present
+    enabled: yes

@@ -12,8 +12,7 @@
   with_items:
     - { username: 'jso-yeon', fullname: "Jeon So-yeon", password: '{{ win_file_server_password }}' }
     - { username: 'lmanoban', fullname: "Lalisa Manoban", password: '{{ win_file_server_password }}' }
-    #- { username: 'Thor', password: '{{ win_file_server_password }}' }
-    #- { username: 'CaptainMarvel', password: '{{ win_file_server_password }}' }
+    - { username: 'hton', fullname: "Hoang ton", password: '{{ win_file_server_password }}' }
 
 ##################################################
 # Create admin users
@@ -29,5 +28,3 @@
       - Administrators
   with_items:
     - { username: 'dengziqi', fullname: "Dèngzǐqí", password: '{{ win_file_server_admin_password }}' }
-    #- { username: 'Thanos', password: '{{ win_file_server_admin_password }}' }
-    #- { username: 'BlackWidow', password: '{{ win_file_server_admin_password }}' }

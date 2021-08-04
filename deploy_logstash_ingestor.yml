@@ -5,20 +5,20 @@
     - include_vars: 'group_vars/sec_tools.yml'
     - include_vars: 'group_vars/corp.yml'
     - include_vars: 'ChooseYourSIEMAdventure/group_vars/all.yml'
-    #- import_tasks: 'roles/init.yml'                                   # Init Linux host
-    #- import_tasks: 'roles/logstash_ingestor/setup_confluent.yml'      # Setup Zookeeper and Kfaka
-    #- import_tasks: 'roles/logstash_ingestor/setup_logstash.yml'       # Setup Logstash
-    #- import_tasks: 'roles/logstash_ingestor/setup_ufw.yml'           # Setup UFW
+    - import_tasks: 'roles/init.yml'                                   # Init Linux host
+    - import_tasks: 'roles/logstash_ingestor/setup_confluent.yml'      # Setup Zookeeper and Kfaka
+    - import_tasks: 'roles/logstash_ingestor/setup_logstash.yml'       # Setup Logstash
+    - import_tasks: 'roles/logstash_ingestor/setup_ufw.yml'            # Setup UFW
     
     #### Setup Elastic ####
     - import_tasks: 'roles/logstash_ingestor/setup_elastic.yml'
       delegate_to: "{{ groups.elastic[0] }}"
 
     #### Setup Graylog ####
-    #- import_tasks: 'roles/logstash_ingestor/setup_graylog.yml'
-    #  delegate_to: "{{ groups.graylog[0] }}"
+    - import_tasks: 'roles/logstash_ingestor/setup_graylog.yml'
+      delegate_to: "{{ groups.graylog[0] }}"
 
     #### Setup Splunk ####
     # Create Splunk HEC inputs
-    #- import_tasks: 'roles/logstash_ingestor/setup_splunk_hec.yml'
-    #  delegate_to: "{{ groups.splunk[0] }}"
+    - import_tasks: 'roles/logstash_ingestor/setup_splunk_hec.yml'
+      delegate_to: "{{ groups.splunk[0] }}"

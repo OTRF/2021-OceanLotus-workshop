@@ -34,9 +34,8 @@ The Terraform playbook above will execute the following script `files/setup_open
 
 # Setup public DNS records
 For this workshop we acquired several doamins but the domain to be used by workshop participants is `huntapples.com`. This public domain will be used to generate Let's Encrypt HTTP certificates for Splunk, Elastic, Graylog, and Arkmie.
-<TODO>
-<TODO>
-<TODO>
+
+![namecheap](../.img/namecheap.png)
 
 ## References
 ### OpenVPN
